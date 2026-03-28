@@ -1,0 +1,21 @@
+{
+  "name": "regxact",
+  "version": "0.1.0",
+  "description": "Regex safety tool — safe by default, explicit to opt out",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build:wasm": "wasm-pack build ../../core --target bundler --out-dir ../../pkg",
+    "build:ts": "tsc",
+    "build": "npm run build:wasm && npm run build:ts",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "regxact-core": "file:../../pkg"
+  },
+  "devDependencies": {
+    "typescript": "^5.4",
+    "vitest": "^3.0"
+  }
+}
