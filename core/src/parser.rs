@@ -4,7 +4,7 @@ use std::str::Chars;
 const METACHARACTERS: [char; 15] = ['.','*','+','?','^','$','{','}','[',']','(',')',']','|','\\'];
 
 //TODO: keep in mind there are other cases
-#[derive(Clone)]
+#[derive(Clone, PartialEq, Eq, Hash)]
 pub enum RegexTree {
     Literal(char), // 'a' — matches literally
     Wildcard, // . is the one and only wildcard                            
@@ -21,7 +21,7 @@ pub enum RegexTree {
     Group {
         node: Box<RegexTree>,
         index: usize,
-        capturing: bool,
+        capturing: bool, //TODO: ADD CAPTURING
     }, // (abc) — captured group
 } 
 
@@ -52,7 +52,7 @@ impl RegexTree{
     }
 }
 
-#[derive(Clone)]
+#[derive(Clone, PartialEq, Eq, Hash)]
 pub enum AnchorKind {
     Start, // ^
     End,   // $
@@ -60,7 +60,7 @@ pub enum AnchorKind {
     NonWord, // \b
 }
 
-#[derive(Clone)]
+#[derive(Clone, PartialEq, Eq, Hash)]
 pub struct ClassRange {
     start: char,
     end: char,
@@ -182,6 +182,6 @@ pub fn parse(x: &str)->RegexTree {
     if !alternation.is_empty(){
         alternation.nodes_mut().push(RegexTree::Sequence(stack.remove(0)));
         return alternation;
-    }
+    } //BUG: FLAWED LOGIC, IF ALTERNATION INSIDE GROUP IT WILL PUSH WRONG THING I THINK
     RegexTree::Sequence(stack.remove(0))
 }

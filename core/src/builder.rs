@@ -48,4 +48,3 @@ impl RegxactBuilder {
         Ok(Pattern{pattern: self.pattern, tree, allows: self.allows, contract: self.contract})
     }
 }
-
