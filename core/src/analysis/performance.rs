@@ -7,7 +7,7 @@ use crate::error::*;
 // a{1}       — repeat that does nothing
 // (a)        — group with no quantifier and single literal, group is pointless
 
-pub fn check_performance(tree: &RegexTree, allows: Vec<String>)->Result<(), RegxactError>{
+pub fn check_performance(tree: &RegexTree, allows: &Vec<String>)->Result<(), RegxactError>{
     for node in tree.nodes(){
         match node{
             // a++
