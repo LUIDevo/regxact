@@ -118,56 +118,62 @@ fn parse_class(chars:&mut Peekable<Chars>)->RegexTree{
 }
 
 pub fn parse(x: &str)->RegexTree {
-    let mut tree=RegexTree::Sequence(Vec::new());
+    // let mut tree=RegexTree::Sequence(Vec::new());
     let mut chars = x.chars().peekable();
     let mut alternation=RegexTree::Alternation(Vec::new());
     let mut index: usize=0;
+    let mut stack: Vec<Vec<RegexTree>>=vec![Vec::new()];
     while let Some(ch)=chars.next(){
         match ch {
-            '.'=>tree.nodes_mut().push(RegexTree::Wildcard),
+            '.'=>stack.last_mut().unwrap().push(RegexTree::Wildcard),
             '['=>{
                 chars.next(); 
-                tree.nodes_mut().push(parse_class(&mut chars));
+                stack.last_mut().unwrap().push(parse_class(&mut chars));
             },
-            '^'=>tree.nodes_mut().push(RegexTree::Anchor(AnchorKind::Start)),
-            '$'=>tree.nodes_mut().push(RegexTree::Anchor(AnchorKind::End)),
+            '^'=>stack.last_mut().unwrap().push(RegexTree::Anchor(AnchorKind::Start)),
+            '$'=>stack.last_mut().unwrap().push(RegexTree::Anchor(AnchorKind::End)),
             '\\'=>match chars.next(){
-                Some('B')=>tree.nodes_mut().push(RegexTree::Anchor(AnchorKind::WordBoundary)),
-                Some('b')=>tree.nodes_mut().push(RegexTree::Anchor(AnchorKind::NonWord)),
-                Some(c)=>tree.nodes_mut().push(RegexTree::Shorthand(c)),
+                Some('B')=>stack.last_mut().unwrap().push(RegexTree::Anchor(AnchorKind::WordBoundary)),
+                Some('b')=>stack.last_mut().unwrap().push(RegexTree::Anchor(AnchorKind::NonWord)),
+                Some(c)=>stack.last_mut().unwrap().push(RegexTree::Shorthand(c)),
                 None=>panic!("trailing backslash"),
             }
             '*'=>{
-                let prev=tree.nodes_mut().pop().unwrap();
-                tree.nodes_mut().push(RegexTree::Repeat{node: Box::new(prev), min: 0, max: None});
+                let prev=stack.last_mut().unwrap().pop().unwrap();
+                stack.last_mut().unwrap().push(RegexTree::Repeat{node: Box::new(prev), min: 0, max: None});
             },
             '+'=>{
-                let prev=tree.nodes_mut().pop().unwrap();
-                tree.nodes_mut().push(RegexTree::Repeat{node: Box::new(prev), min: 1, max: None});
+                let prev=stack.last_mut().unwrap().pop().unwrap();
+                stack.last_mut().unwrap().push(RegexTree::Repeat{node: Box::new(prev), min: 1, max: None});
             },
             '?'=>{
-                let prev=tree.nodes_mut().pop().unwrap();
-                tree.nodes_mut().push(RegexTree::Repeat{node: Box::new(prev), min: 0, max: Some(1)});
+                let prev=stack.last_mut().unwrap().pop().unwrap();
+                stack.last_mut().unwrap().push(RegexTree::Repeat{node: Box::new(prev), min: 0, max: Some(1)});
             },
             '{'=>{
-                let prev=tree.nodes_mut().pop().unwrap();
+                let prev=stack.last_mut().unwrap().pop().unwrap();
                 chars.next();
                 index+=1;
-                tree.nodes_mut().push(parse_repeat(&mut x.chars().collect::<Vec<char>>(),&mut index, prev));
-            }
+                stack.last_mut().unwrap().push(parse_repeat(&mut x.chars().collect::<Vec<char>>(),&mut index, prev));
+            },
+            '('=>{
+                 
+            },
+            ')'=>{
+            },
             c=>match chars.next(){
                 Some('|')=>{
-                    alternation.nodes_mut().extend(tree.nodes_mut().clone());
-                    tree.nodes_mut().clear();
+                    alternation.nodes_mut().extend(stack.last_mut().unwrap().clone());
+                    stack.last_mut().unwrap().clear();
                 }
-                _=>tree.nodes_mut().push(RegexTree::Literal(ch))
+                _=>stack.last_mut().unwrap().push(RegexTree::Literal(ch))
             }
         }
         index+=1;
     }
     if !alternation.is_empty(){
-        alternation.nodes_mut().push(tree);
+        alternation.nodes_mut().push(RegexTree::Sequence(stack.remove(0)));
         return alternation;
     }
-    tree
+    RegexTree::Sequence(stack.remove(0))
 }
