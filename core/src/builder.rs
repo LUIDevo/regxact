@@ -1,13 +1,14 @@
 use crate::parser::parse;
+use crate::parser::RegexTree;
 enum RegxactError{ }
-enum tree{ }
 
 pub struct Pattern {
     pattern: String,
-    tree: tree,
+    tree: RegexTree,
     allows: Vec<String>,
     contract: Option<String>,
 }
+
 pub struct RegxactBuilder {
     pattern: String,
     allows: Vec<String>,
@@ -42,7 +43,7 @@ impl RegxactBuilder {
 
         //contract check, any contradictions if contract exists
 
-        Ok(self)
+        Ok(Pattern{pattern: self.pattern, tree, allows: self.allows, contract: self.contract})
     }
 }
 

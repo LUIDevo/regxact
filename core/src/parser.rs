@@ -157,9 +157,11 @@ pub fn parse(x: &str)->RegexTree {
                 stack.last_mut().unwrap().push(parse_repeat(&mut x.chars().collect::<Vec<char>>(),&mut index, prev));
             },
             '('=>{
-                 
+                stack.push(Vec::new());  
             },
             ')'=>{
+                let prev=stack.pop().unwrap();
+                stack[0].extend(prev);
             },
             c=>match chars.next(){
                 Some('|')=>{
