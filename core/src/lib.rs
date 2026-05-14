@@ -1,6 +1,8 @@
 mod builder;
 mod test;
 mod parser;
+mod error;
+mod analysis;
 
 #[macro_export]
 macro_rules! rx{

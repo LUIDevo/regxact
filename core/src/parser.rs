@@ -6,12 +6,12 @@ const METACHARACTERS: [char; 15] = ['.','*','+','?','^','$','{','}','[',']','(',
 //TODO: keep in mind there are other cases
 #[derive(Clone)]
 pub enum RegexTree {
-    Literal(char), // "abc" — matches literally
-    Wildcard, // . is a wildcard                            
+    Literal(char), // 'a' — matches literally
+    Wildcard, // . is the one and only wildcard                            
     Class(Vec<ClassRange>, bool), // [a-f0-9] — matches any char in the class
     Anchor(AnchorKind), // ^ or $ or \b \B
     Shorthand(char), // \d \w \D \S are all shorthands (idk about this one) 
-    Sequence(Vec<RegexTree>), // ab — two things in sequence
+    Sequence(Vec<RegexTree>), // the entire regex as a sequence
     Alternation(Vec<RegexTree>), // a|b — either this or that
     Repeat {
         node: Box<RegexTree>,
@@ -26,9 +26,15 @@ pub enum RegexTree {
 } 
 
 impl RegexTree{ 
+    pub fn nodes(&self) -> &Vec<RegexTree> {
+        match self {
+            RegexTree::Sequence(ref nodes)|RegexTree::Alternation(ref nodes) => nodes,
+            _ => panic!("not a Sequence"),
+        }
+    }
     pub fn nodes_mut(&mut self) -> &mut Vec<RegexTree> {
         match self {
-            RegexTree::Sequence(ref mut nodes) => nodes,
+            RegexTree::Sequence(ref mut nodes)|RegexTree::Alternation(ref mut nodes) => nodes,
             _ => panic!("not a Sequence"),
         }
     }

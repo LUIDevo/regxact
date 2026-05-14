@@ -1,6 +1,7 @@
 use crate::parser::parse;
 use crate::parser::RegexTree;
-enum RegxactError{ }
+use crate::error::RegxactError;
+use crate::analysis::performance::check_performance;
 
 pub struct Pattern {
     pattern: String,
