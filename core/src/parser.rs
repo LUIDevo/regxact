@@ -61,7 +61,22 @@ pub struct ClassRange {
 }
 
 fn parse_repeat_contents(s: &String)->Option<(usize, Option<usize>)>{
+    if s.contains(','){
+        let parts:Vec<&str>=s.splitn(2, ',').collect();
+        let min=parts[0].parse::<usize>().ok()?;
+        let max=if parts[1].is_empty(){
+            None
+        } else {
+            Some(parts[1].parse::<usize>().ok()?)
+        };
+        if let Some(max_val) = max { if min > max_val { return None; } }
+        Some((min, max))
+    } else{
+        let n=s.parse::<usize>().ok()?;
+        Some((n, Some(n)))
+    }
 }
+
 fn parse_repeat(c: &mut Vec<char>, i: &mut usize, node: RegexTree)->RegexTree{
     if let Some(close)=c[*i..].iter().position(|&c| c=='}'){
         let content: String=c[*i..*i+close].iter().collect();
