@@ -16,26 +16,20 @@ pub enum RegexTree {
     Repeat {
         node: Box<RegexTree>,
         min: usize,
-        capturing: bool,
         max: Option<usize>, // None means unbounded
     }, // a+ a* a? a{3,6} — repetition
     Group {
         node: Box<RegexTree>,
         index: usize,
+        capturing: bool,
     }, // (abc) — captured group
 } 
 
 impl RegexTree{ 
-    pub fn push(&mut self, node: RegexTree){
-        match self{
-            RegexTree::Sequence(ref mut nodes)=> nodes.push(node),
-            _=>panic!("push called on non-sequence")
-        }
-    }
-    pub fn push_vec(&mut self, arr: Vec<RegexTree>){
-        match self{
-            RegexTree::Sequence(ref mut nodes)=> nodes.extend(arr),
-            _=>panic!("push_vec called on non-sequence")
+    pub fn nodes_mut(&mut self) -> &mut Vec<RegexTree> {
+        match self {
+            RegexTree::Sequence(ref mut nodes) => nodes,
+            _ => panic!("not a Sequence"),
         }
     }
     pub fn push_range(&mut self, range: ClassRange){
@@ -48,18 +42,6 @@ impl RegexTree{
         match self{
             RegexTree::Alternation(ref mut arr)|RegexTree::Sequence(ref mut arr)=>arr.is_empty(),
             _=>panic!("is_empty called on non alternation or sequence"),
-        }
-    }
-    pub fn copy(&mut self)->Vec<RegexTree>{
-        match self{
-            RegexTree::Sequence(ref mut arr)=>arr.clone(),
-            _=>panic!("copy called on non sequence"),
-        }
-    }
-    pub fn clear(&mut self){
-        match self{
-            RegexTree::Alternation(ref mut arr)|RegexTree::Sequence(ref mut arr)=>arr.clear(),
-            _=>panic!("clear called on non alternation or sequence"),
         }
     }
 }
@@ -76,6 +58,19 @@ pub enum AnchorKind {
 pub struct ClassRange {
     start: char,
     end: char,
+}
+
+fn parse_repeat_contents(s: &String)->Option<(usize, Option<usize>)>{
+}
+fn parse_repeat(c: &mut Vec<char>, i: &mut usize, node: RegexTree)->RegexTree{
+    if let Some(close)=c[*i..].iter().position(|&c| c=='}'){
+        let content: String=c[*i..*i+close].iter().collect();
+        *i+=close+1;
+        if let Some((min,max))=parse_repeat_contents(&content){
+            return RegexTree::Repeat{node: Box::new(node), min, max};
+        }
+    }
+    RegexTree::Literal('{')
 }
 
 fn parse_class(chars:&mut Peekable<Chars>)->RegexTree{
@@ -107,37 +102,56 @@ fn parse_class(chars:&mut Peekable<Chars>)->RegexTree{
     class
 }
 
-pub fn parse(x: &str)->RegexTree{
+pub fn parse(x: &str)->RegexTree {
     let mut tree=RegexTree::Sequence(Vec::new());
     let mut chars = x.chars().peekable();
     let mut alternation=RegexTree::Alternation(Vec::new());
+    let mut index: usize=0;
     while let Some(ch)=chars.next(){
         match ch {
-            '.'=>tree.push(RegexTree::Wildcard),
+            '.'=>tree.nodes_mut().push(RegexTree::Wildcard),
             '['=>{
                 chars.next(); 
-                tree.push(parse_class(&mut chars));
+                tree.nodes_mut().push(parse_class(&mut chars));
             },
-            '^'=>tree.push(RegexTree::Anchor(AnchorKind::Start)),
-            '$'=>tree.push(RegexTree::Anchor(AnchorKind::End)),
+            '^'=>tree.nodes_mut().push(RegexTree::Anchor(AnchorKind::Start)),
+            '$'=>tree.nodes_mut().push(RegexTree::Anchor(AnchorKind::End)),
             '\\'=>match chars.next(){
-                Some('B')=>tree.push(RegexTree::Anchor(AnchorKind::WordBoundary)),
-                Some('b')=>tree.push(RegexTree::Anchor(AnchorKind::NonWord)),
-                Some(c)=>tree.push(RegexTree::Shorthand(c)),
+                Some('B')=>tree.nodes_mut().push(RegexTree::Anchor(AnchorKind::WordBoundary)),
+                Some('b')=>tree.nodes_mut().push(RegexTree::Anchor(AnchorKind::NonWord)),
+                Some(c)=>tree.nodes_mut().push(RegexTree::Shorthand(c)),
                 None=>panic!("trailing backslash"),
+            }
+            '*'=>{
+                let prev=tree.nodes_mut().pop().unwrap();
+                tree.nodes_mut().push(RegexTree::Repeat{node: Box::new(prev), min: 0, max: None});
+            },
+            '+'=>{
+                let prev=tree.nodes_mut().pop().unwrap();
+                tree.nodes_mut().push(RegexTree::Repeat{node: Box::new(prev), min: 1, max: None});
+            },
+            '?'=>{
+                let prev=tree.nodes_mut().pop().unwrap();
+                tree.nodes_mut().push(RegexTree::Repeat{node: Box::new(prev), min: 0, max: Some(1)});
+            },
+            '{'=>{
+                let prev=tree.nodes_mut().pop().unwrap();
+                chars.next();
+                index+=1;
+                tree.nodes_mut().push(parse_repeat(&mut x.chars().collect::<Vec<char>>(),&mut index, prev));
             }
             c=>match chars.next(){
                 Some('|')=>{
-                    alternation.push_vec(tree.copy());
-                    tree.clear();
+                    alternation.nodes_mut().extend(tree.nodes_mut().clone());
+                    tree.nodes_mut().clear();
                 }
-                // Some('+')=>,
-                _=>tree.push(RegexTree::Literal(ch))
+                _=>tree.nodes_mut().push(RegexTree::Literal(ch))
             }
         }
+        index+=1;
     }
     if !alternation.is_empty(){
-        alternation.push(tree);
+        alternation.nodes_mut().push(tree);
         return alternation;
     }
     tree
