@@ -4,6 +4,7 @@ use std::str::Chars;
 const METACHARACTERS: [char; 15] = ['.','*','+','?','^','$','{','}','[',']','(',')',']','|','\\'];
 
 //TODO: keep in mind there are other cases
+#[derive(Clone)]
 pub enum RegexTree {
     Literal(char), // "abc" — matches literally
     Wildcard, // . is a wildcard                            
@@ -31,21 +32,47 @@ impl RegexTree{
             _=>panic!("push called on non-sequence")
         }
     }
+    pub fn push_vec(&mut self, arr: Vec<RegexTree>){
+        match self{
+            RegexTree::Sequence(ref mut nodes)=> nodes.extend(arr),
+            _=>panic!("push_vec called on non-sequence")
+        }
+    }
     pub fn push_range(&mut self, range: ClassRange){
         match self{
             RegexTree::Class(ref mut ranges, _)=>ranges.push(range),
             _=>panic!("push called on non-class")
         }
     }
+    pub fn is_empty(&mut self)->bool{
+        match self{
+            RegexTree::Alternation(ref mut arr)|RegexTree::Sequence(ref mut arr)=>arr.is_empty(),
+            _=>panic!("is_empty called on non alternation or sequence"),
+        }
+    }
+    pub fn copy(&mut self)->Vec<RegexTree>{
+        match self{
+            RegexTree::Sequence(ref mut arr)=>arr.clone(),
+            _=>panic!("copy called on non sequence"),
+        }
+    }
+    pub fn clear(&mut self){
+        match self{
+            RegexTree::Alternation(ref mut arr)|RegexTree::Sequence(ref mut arr)=>arr.clear(),
+            _=>panic!("clear called on non alternation or sequence"),
+        }
+    }
 }
 
+#[derive(Clone)]
 pub enum AnchorKind {
     Start, // ^
     End,   // $
     WordBoundary, // \B
     NonWord, // \b
-
 }
+
+#[derive(Clone)]
 pub struct ClassRange {
     start: char,
     end: char,
@@ -80,18 +107,38 @@ fn parse_class(chars:&mut Peekable<Chars>)->RegexTree{
     class
 }
 
-pub fn parse(x: &str){
+pub fn parse(x: &str)->RegexTree{
     let mut tree=RegexTree::Sequence(Vec::new());
     let mut chars = x.chars().peekable();
+    let mut alternation=RegexTree::Alternation(Vec::new());
     while let Some(ch)=chars.next(){
-        //TODO:  replace with a match
-        //TODO:  reminder that anchor needs \b and \B
-        if METACHARACTERS.contains(&ch){ tree.push(RegexTree::Literal(ch)); } // 
-        if ch=='.'{ tree.push(RegexTree::Wildcard); }
-        if ch=='['{ chars.next(); tree.push(parse_class(&mut chars));
-        if ch=='^'{ tree.push(RegexTree::Anchor(AnchorKind::Start)); }
-        if ch=='$'{ tree.push(RegexTree::Anchor(AnchorKind::End)); }
-                
+        match ch {
+            '.'=>tree.push(RegexTree::Wildcard),
+            '['=>{
+                chars.next(); 
+                tree.push(parse_class(&mut chars));
+            },
+            '^'=>tree.push(RegexTree::Anchor(AnchorKind::Start)),
+            '$'=>tree.push(RegexTree::Anchor(AnchorKind::End)),
+            '\\'=>match chars.next(){
+                Some('B')=>tree.push(RegexTree::Anchor(AnchorKind::WordBoundary)),
+                Some('b')=>tree.push(RegexTree::Anchor(AnchorKind::NonWord)),
+                Some(c)=>tree.push(RegexTree::Shorthand(c)),
+                None=>panic!("trailing backslash"),
+            }
+            c=>match chars.next(){
+                Some('|')=>{
+                    alternation.push_vec(tree.copy());
+                    tree.clear();
+                }
+                // Some('+')=>,
+                _=>tree.push(RegexTree::Literal(ch))
+            }
         }
     }
+    if !alternation.is_empty(){
+        alternation.push(tree);
+        return alternation;
+    }
+    tree
 }
