@@ -1,7 +1,8 @@
 #[cfg(test)]
 mod tests {
     use crate::{rx};
-    use crate::pattern::{Pattern, RegexTree};
+    use crate::pattern::Pattern;
+    use crate::regex_tree::RegexTree;
     use std::collections::HashSet;
 
     #[test]
@@ -12,7 +13,7 @@ mod tests {
     }
     
     #[test]
-    fn test_literal() {
+    fn test_literal_sequence() {
         let tree=RegexTree::Sequence(vec![
             RegexTree::Literal('a'),
             RegexTree::Literal('b'),

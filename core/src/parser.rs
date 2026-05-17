@@ -1,8 +1,8 @@
 use std::iter::Peekable;
 use std::str::Chars;
-use crate::pattern::AnchorKind;
-use crate::pattern::RegexTree;
-use crate::pattern::ClassRange;
+use crate::regex_tree::AnchorKind;
+use crate::regex_tree::RegexTree;
+use crate::regex_tree::ClassRange;
 
 const METACHARACTERS: [char; 15] = ['.','*','+','?','^','$','{','}','[',']','(',')',']','|','\\'];
 

@@ -1,5 +1,5 @@
 use std::collections::HashSet;
-use std::collections::regex_tree;
+use crate::regex_tree::RegexTree;
 
 #[derive(Debug, PartialEq, Eq)]
 pub struct Pattern {
