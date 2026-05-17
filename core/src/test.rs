@@ -43,4 +43,28 @@ mod tests {
         let result=RegxactError::Performance(PerformanceError::NestedQuantifier);
         assert_eq!(rx!("(a+)+"), Err(result));
     }
+
+    #[test]
+    fn test_error_duplicate_alternation(){
+        let result=RegxactError::Performance(PerformanceError::DuplicateAlternation);
+        assert_eq!(rx!("(a|a)"), Err(result));
+    }
+
+    #[test]
+    fn test_error_duplicate_alternation_three_branches() {
+        let result=RegxactError::Performance(PerformanceError::DuplicateAlternation);
+        assert_eq!(rx!("(a|b|a)"), Err(result));
+    }
+
+    #[test]
+    fn test_error_unneeded_repeat() {
+        let result=RegxactError::Performance(PerformanceError::UnneededRepeat);
+        assert_eq!(rx!("a{1}"), Err(result));
+    }
+
+    #[test]
+    fn test_error_redundant_group() {
+        let result=RegxactError::Performance(PerformanceError::RedundantGroup);
+        assert_eq!(rx!("(a)"), Err(result));
+    }
 }
