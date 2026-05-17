@@ -3,6 +3,8 @@ mod tests {
     use crate::{rx};
     use crate::pattern::Pattern;
     use crate::regex_tree::RegexTree;
+    use crate::error::RegxactError;
+    use crate::error::PerformanceError;
     use std::collections::HashSet;
 
     #[test]
@@ -34,5 +36,11 @@ mod tests {
         ]);
         let result=Pattern{pattern: "a|b".to_string(), tree, allows: HashSet::new(), contract: None};
         assert_eq!(rx!("a|b"), Result::Ok(result));
+    }
+
+    #[test]
+    fn test_error_nested_quantifier() {
+        let result=RegxactError::Performance(PerformanceError::NestedQuantifier);
+        assert_eq!(rx!("(a+)+"), Err(result));
     }
 }

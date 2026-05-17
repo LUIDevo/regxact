@@ -108,7 +108,7 @@ pub fn parse(x: &str)->RegexTree {
             },
             ')'=>{
                 let prev=stack.pop().unwrap();
-                stack[0].last_mut().unwrap().push(RegexTree::Group{node: Box::new(RegexTree::Sequence(prev)), index: 0, capturing: true});//BUG: FIX INDEX
+                stack.last_mut().unwrap().push(RegexTree::Group{node: Box::new(RegexTree::Sequence(prev)), index: 0, capturing: true});//BUG: FIX INDEX
             },
             '|' => {
                 let branch = stack.pop().unwrap();
