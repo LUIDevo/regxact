@@ -3,6 +3,8 @@ mod test;
 mod parser;
 mod error;
 mod analysis;
+mod pattern;
+mod regex_tree;
 
 #[macro_export]
 macro_rules! rx{

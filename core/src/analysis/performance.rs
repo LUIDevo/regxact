@@ -1,4 +1,4 @@
-use crate::parser::RegexTree;
+use crate::pattern::RegexTree;
 use crate::error::*;
 use std::collections::HashSet;
 

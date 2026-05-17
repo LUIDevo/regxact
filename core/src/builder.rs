@@ -1,15 +1,8 @@
 use crate::parser::parse;
-use crate::parser::RegexTree;
+use crate::pattern::Pattern;
 use crate::error::RegxactError;
 use crate::analysis::performance::check_performance;
 use std::collections::HashSet;
-
-pub struct Pattern {
-    pattern: String,
-    tree: RegexTree,
-    allows: HashSet<String>,
-    contract: Option<String>,
-}
 
 pub struct RegxactBuilder {
     pattern: String,

@@ -1,11 +1,11 @@
 use std::fmt;
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq)]
 pub enum RegxactError{ 
     Performance(PerformanceError),
 }
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq)]
 pub enum PerformanceError{
     NestedQuantifier,
     UnneededRepeat,
