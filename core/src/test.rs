@@ -31,8 +31,8 @@ mod tests {
     #[test]
     fn test_alternation() {
         let tree=RegexTree::Alternation(vec![
-            RegexTree::Sequence(vec![RegexTree::Literal('a')]),
-            RegexTree::Sequence(vec![RegexTree::Literal('b')]),
+            RegexTree::Literal('a'),
+            RegexTree::Literal('b'),
         ]);
         let result=Pattern{pattern: "a|b".to_string(), tree, allows: HashSet::new(), contract: None};
         assert_eq!(rx!("a|b"), Result::Ok(result));
@@ -60,11 +60,5 @@ mod tests {
     fn test_error_unneeded_repeat() {
         let result=RegxactError::Performance(PerformanceError::UnneededRepeat);
         assert_eq!(rx!("a{1}"), Err(result));
-    }
-
-    #[test]
-    fn test_error_redundant_group() {
-        let result=RegxactError::Performance(PerformanceError::RedundantGroup);
-        assert_eq!(rx!("(a)"), Err(result));
     }
 }

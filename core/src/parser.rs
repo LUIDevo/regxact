@@ -65,9 +65,8 @@ fn parse_class(chars:&mut Peekable<Chars>)->RegexTree{
 }
 
 pub fn parse(x: &str)->RegexTree {
-    // let mut tree=RegexTree::Sequence(Vec::new());
     let mut chars = x.chars().peekable();
-    let mut alternation=RegexTree::Alternation(Vec::new());
+    let mut alternation=vec![false];
     let mut index: usize=0;
     let mut stack=vec![Vec::new()];
     while let Some(ch)=chars.next(){
@@ -103,17 +102,19 @@ pub fn parse(x: &str)->RegexTree {
                 index+=1;
                 stack.last_mut().unwrap().push(parse_repeat(&mut x.chars().collect::<Vec<char>>(),&mut index, prev));
             },
+            '}'=>(),
             '('=>{
                 stack.push(Vec::new());  
+                alternation.push(false);
             },
             ')'=>{
                 let prev=stack.pop().unwrap();
-                stack.last_mut().unwrap().push(RegexTree::Group{node: Box::new(RegexTree::Sequence(prev)), index: 0, capturing: true});//BUG: FIX INDEX
+                let is_alt=alternation.pop().unwrap();
+                let node = if is_alt {Box::new(RegexTree::Alternation(prev))} else {Box::new(RegexTree::Sequence(prev))};
+                stack.last_mut().unwrap().push(RegexTree::Group{node: node, index: 0, capturing: true});//BUG: FIX INDEX
             },
             '|' => {
-                let branch = stack.pop().unwrap();
-                alternation.nodes_mut().push(RegexTree::Sequence(branch));
-                stack.push(Vec::new());
+                *alternation.last_mut().unwrap()=true;
             }
             c=>{
                 stack.last_mut().unwrap().push(RegexTree::Literal(c));
@@ -121,9 +122,8 @@ pub fn parse(x: &str)->RegexTree {
         }
         index+=1;
     }
-    if !alternation.is_empty(){
-        alternation.nodes_mut().push(RegexTree::Sequence(stack.remove(0)));
-        return alternation;
-    } //BUG: FLAWED LOGIC, IF ALTERNATION INSIDE GROUP IT WILL PUSH WRONG THING I THINK
+    if *alternation.last_mut().unwrap()==true{
+        return RegexTree::Alternation(stack.remove(0));
+    }
     RegexTree::Sequence(stack.remove(0))
 }
