@@ -61,4 +61,14 @@ mod tests {
         let result=RegxactError::Performance(PerformanceError::UnneededRepeat);
         assert_eq!(rx!("a{1}"), Err(result));
     }
+
+    #[test]
+    fn test_shorthand() {
+        // let result=RegxactError::Performance(PerformanceError::UnneededRepeat);
+        let tree=RegexTree::Sequence(vec![
+            RegexTree::Shorthand('d'),
+        ]);
+        let result=Pattern{pattern: r"\d".to_string(), tree, allows: HashSet::new(), contract: None};
+        assert_eq!(rx!(r"\d"), Ok(result)); //BUG: TEMPORARY, THIS SHOULD ERROR OUT LATER DUE TO UNDECLARED CHARSET
+    }
 }
