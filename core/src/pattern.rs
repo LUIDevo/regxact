@@ -6,6 +6,6 @@ pub struct Pattern {
     pub pattern: String,
     pub tree: RegexTree,
     pub allows: HashSet<String>,
-    pub contract: Option<String>,
+    pub contract: Option<String>,// Todo: turn into a contract type
 }
 

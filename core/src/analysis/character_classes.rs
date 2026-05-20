@@ -17,8 +17,12 @@ pub fn check_node(node: &RegexTree, allows: &HashSet<String>)->Result<(), Regxac
             Ok(())
         }
         RegexTree::Shorthand(c)=>{
-            if !allows.contains("unicode"){ //BUG: THIS IS NOT THE PROPER IMPLEMENTATION, CHANGE TO CHARSET INSTEAD OF ALLOWS
+            if c=='w' ||c=='s'||c=='d'{
+                if !allows.contains("unicode"){ //BUG: THIS IS NOT THE PROPER IMPLEMENTATION, CHANGE TO CHARSET INSTEAD OF ALLOWS
+                }
+                Ok(())
             }
+            Ok(())
         }
     }
 }
