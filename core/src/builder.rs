@@ -10,8 +10,6 @@ pub struct RegxactBuilder {
     contract: Option<String>,
 }
 
-//TODO: build
-
 impl RegxactBuilder {
     pub fn new(pattern: &str)->Self{
         RegxactBuilder{

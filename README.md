@@ -10,3 +10,12 @@ The traditional developer approach to regex is to avoid writing it entirely, by 
 Regxact fixes this by providing developers with macros that cover common use cases of regex, so you don't have to write or even see raw regex in your codebase. For everything else, Regxact allows you to write Regex with an additional safety checker, that can also be used to extend off of the macros. 
 
 Experienced developers can adopt Regxact quickly. It gets out of your way and makes regex safer without slowing you down.
+
+TODO:
+finish checks
+convert allow to an enum
+Builder pattern
+Get allows working
+Contract
+Contract Checker
+Finish test checks

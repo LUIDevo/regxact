@@ -4,8 +4,6 @@ use std::collections::HashSet;
 
 // \w \d \s without charset declaration
 // Unescaped dot outside character class
-// No upper bound on pattern length (unbounded)
-// Upper bound exceeds contract maximum
 // `/m` / `/s` / `/i` flags without explicit allow
 
 pub fn check_node(node: &RegexTree, allows: &HashSet<String>)->Result<(), RegxactError>{
@@ -15,15 +13,29 @@ pub fn check_node(node: &RegexTree, allows: &HashSet<String>)->Result<(), Regxac
                 return Err(RegxactError::CharacterClass(CharacterClassError::UnescapedDot));
             }
             Ok(())
-        }
+        },
         RegexTree::Shorthand(c)=>{
-            if c=='w' ||c=='s'||c=='d'{
-                if !allows.contains("unicode"){ //BUG: THIS IS NOT THE PROPER IMPLEMENTATION, CHANGE TO CHARSET INSTEAD OF ALLOWS
+            if *c=='m'{
+                if !allows.contains("multiline"){ 
+                    return Err(RegxactError::CharacterClass(CharacterClassError::UnescapedDot));
                 }
-                Ok(())
+                return Ok(());
+            }
+            if *c=='s'{
+                if !allows.contains("dotall"){
+                    return Err(RegxactError::CharacterClass(CharacterClassError::UnescapedDot));
+                }
+                return Ok(());
             }
             Ok(())
-        }
+        },
+        RegexTree::Sequence(inner_nodes)|RegexTree::Alternation(inner_nodes)=>{
+            for inner_node in inner_nodes{
+                check_node(inner_node, allows)?;
+            }
+            Ok(())
+        },
+        _=>Ok(())
     }
 }
 

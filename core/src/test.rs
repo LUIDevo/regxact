@@ -57,14 +57,14 @@ mod tests {
     }
 
     #[test]
-    fn test_error_unneeded_repeat() {
-        let result=RegxactError::Performance(PerformanceError::UnneededRepeat);
-        assert_eq!(rx!("a{1}"), Err(result));
+    fn test_error_duplicate_alternation_partial() {
+        let result=RegxactError::Performance(PerformanceError::DuplicateAlternation);
+        assert_eq!(rx!("(a|ab)"), Err(result));
     }
 
     #[test]
     fn test_shorthand() {
-        // let result=RegxactError::Performance(PerformanceError::UnneededRepeat);
+        let result=RegxactError::CharacterClass(crate::error::CharacterClassError::UnescapedDot));
         let tree=RegexTree::Sequence(vec![
             RegexTree::Shorthand('d'),
         ]);

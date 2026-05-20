@@ -5,7 +5,7 @@ use std::collections::HashSet;
 // a++        — repeat inside repeat with same node, redundant
 // (a|a)      — duplicate branches in alternation
 // (a|b|a)    — same
-// a{1}       — repeat that does nothing
+// (a|ab)    — same
 
 pub fn check_node(node: &RegexTree, inside_repeat: bool)->Result<(), RegxactError>{
     match node {
@@ -13,19 +13,14 @@ pub fn check_node(node: &RegexTree, inside_repeat: bool)->Result<(), RegxactErro
             if inside_repeat{
                 return Err(RegxactError::Performance(PerformanceError::NestedQuantifier));
             }
-            if *min==1 && *max==Some(1){
-                return Err(RegxactError::Performance(PerformanceError::UnneededRepeat));
-            }
             check_node(inner_node, true)
         }
         RegexTree::Group{ node: inner_node, ..}=>{
             check_node(inner_node, inside_repeat)
         }
         RegexTree::Alternation(inner_nodes)=>{
-            println!("got heres jdiasiasdoiadsijoadsjiodsajio");
             let mut duplication=HashSet::new();
             for inner_node in inner_nodes{
-                println!("got heres jdiasiasdoiadsijoadsjiodsajio");
                 if !duplication.insert(inner_node){
                     return Err(RegxactError::Performance(PerformanceError::DuplicateAlternation));
                 }

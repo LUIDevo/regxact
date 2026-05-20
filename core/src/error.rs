@@ -9,7 +9,6 @@ pub enum RegxactError{
 #[derive(Debug, PartialEq)]
 pub enum PerformanceError{
     NestedQuantifier,
-    UnneededRepeat,
     DuplicateAlternation,
 }
 
