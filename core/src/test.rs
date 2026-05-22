@@ -2,7 +2,7 @@
 mod tests {
     use crate::{rx};
     use crate::rx::Rx;
-    use crate::regex_tree::RegexTree;
+    use crate::regex_tree::{ClassRange, RegexTree};
     use crate::error::RegxactError;
     use crate::error::PerformanceError;
     use crate::error::CharacterClassError;
@@ -82,5 +82,20 @@ mod tests {
         let tree=RegexTree::Sequence(vec!(RegexTree::Literal('a')));
         let result=Rx{pattern: "a".to_string(), tree, allows: HashSet::new(), contract: None};
         assert_eq!(Rx::email(), Ok(result))
+    }
+    #[test]
+    fn test_repeat_2() {
+        assert_eq!(rx!("\\.[a-zA-Z]{2,}"), Ok(Rx {
+            pattern: "\\.[a-zA-Z]{2,}".to_string(),
+            tree: RegexTree::Sequence(vec![
+                RegexTree::Literal('.'),
+                RegexTree::Repeat { node: Box::new(RegexTree::Class(vec![
+                        ClassRange { start: 'A', end: 'Z' },
+                        ClassRange { start: 'a', end: 'z' },
+                ], false)), min: 2, max: None }
+            ]),
+            allows: HashSet::new(),
+            contract: None
+        }));
     }
 }

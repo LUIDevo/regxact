@@ -23,3 +23,4 @@ TODO:
 - [ ] Finish test checks
 - [ ] WASM integration
 - [ ] Better error messaging
+- [ ] Switch to fully index based system
