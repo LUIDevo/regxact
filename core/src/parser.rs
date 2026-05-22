@@ -25,7 +25,7 @@ fn parse_repeat_contents(s: &String)->Option<(usize, Option<usize>)>{
 fn parse_repeat(c: &mut Vec<char>, i: &mut usize, node: RegexTree, chars:&mut Peekable<Chars>)->RegexTree{
     if let Some(close)=c[*i..].iter().position(|&c| c=='}'){
         let content: String=c[*i..*i+close].iter().collect();
-        for _ in 0..(close-*i){
+        for _ in 0..(close-*i+2){
             chars.next();
         }
         *i+=close+1;
