@@ -5,11 +5,12 @@ mod error;
 mod analysis;
 mod pattern;
 mod regex_tree;
+mod allow;
 
 #[macro_export]
 macro_rules! rx{
     ($pattern:expr)=>{
-        crate::builder::RegxactBuilder::new($pattern).build();
+        crate::builder::RegxactBuilder::new($pattern).build()
     };
     ($pattern:expr, $($key: ident= $val:expr),*)=>{
         let mut builder=crate::builder::RegxactBuilder::new($pattern);

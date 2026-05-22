@@ -1,29 +1,30 @@
 use crate::regex_tree::RegexTree;
 use crate::error::*;
 use std::collections::HashSet;
+use crate::allow::Allow;
 
 // \w \d \s without charset declaration
 // Unescaped dot outside character class
 // `/m` / `/s` / `/i` flags without explicit allow
 
-pub fn check_node(node: &RegexTree, allows: &HashSet<String>)->Result<(), RegxactError>{
+pub fn check_node(node: &RegexTree, allows: &HashSet<Allow>)->Result<(), RegxactError>{
     match node {
         RegexTree::Wildcard=>{
-            if !allows.contains("wilcard"){
+            if !allows.contains(&Allow::Wildcard){
                 return Err(RegxactError::CharacterClass(CharacterClassError::UnescapedDot));
             }
             Ok(())
         },
         RegexTree::Shorthand(c)=>{
             if *c=='m'{
-                if !allows.contains("multiline"){ 
-                    return Err(RegxactError::CharacterClass(CharacterClassError::UnescapedDot));
+                if !allows.contains(&Allow::MultiLine){ 
+                    return Err(RegxactError::CharacterClass(CharacterClassError::MultiLine));
                 }
                 return Ok(());
             }
             if *c=='s'{
-                if !allows.contains("dotall"){
-                    return Err(RegxactError::CharacterClass(CharacterClassError::UnescapedDot));
+                if !allows.contains(&Allow::DotAll){
+                    return Err(RegxactError::CharacterClass(CharacterClassError::DotAll));
                 }
                 return Ok(());
             }
@@ -39,7 +40,7 @@ pub fn check_node(node: &RegexTree, allows: &HashSet<String>)->Result<(), Regxac
     }
 }
 
-pub fn check_character_classes(tree: &RegexTree, allows: &HashSet<String>)->Result<(), RegxactError>{
+pub fn check_character_classes(tree: &RegexTree, allows: &HashSet<Allow>)->Result<(), RegxactError>{
     for node in tree.nodes(){
         check_node(node, allows)?;
     }

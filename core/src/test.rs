@@ -5,6 +5,7 @@ mod tests {
     use crate::regex_tree::RegexTree;
     use crate::error::RegxactError;
     use crate::error::PerformanceError;
+    use crate::error::CharacterClassError;
     use std::collections::HashSet;
 
     #[test]
@@ -64,11 +65,6 @@ mod tests {
 
     #[test]
     fn test_shorthand() {
-        let result=RegxactError::CharacterClass(crate::error::CharacterClassError::UnescapedDot));
-        let tree=RegexTree::Sequence(vec![
-            RegexTree::Shorthand('d'),
-        ]);
-        let result=Pattern{pattern: r"\d".to_string(), tree, allows: HashSet::new(), contract: None};
-        assert_eq!(rx!(r"\d"), Ok(result)); //BUG: TEMPORARY, THIS SHOULD ERROR OUT LATER DUE TO UNDECLARED CHARSET
+        assert_eq!(rx!(r"\s"), Err(RegxactError::CharacterClass(CharacterClassError::DotAll))); //BUG: TEMPORARY, THIS SHOULD ERROR OUT LATER DUE TO UNDECLARED CHARSET
     }
 }

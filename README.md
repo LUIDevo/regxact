@@ -12,10 +12,11 @@ Regxact fixes this by providing developers with macros that cover common use cas
 Experienced developers can adopt Regxact quickly. It gets out of your way and makes regex safer without slowing you down.
 
 TODO:
-finish checks
-convert allow to an enum
-Builder pattern
-Get allows working
-Contract
-Contract Checker
-Finish test checks
+- [x] finish checks
+- [x] convert allow to an enum
+- [x] Get allows working
+- [ ] Redesign the allows approach. Think whether how to approach allows with rx! vs Pattern
+- [ ] Builder pattern
+- [ ] Contract
+- [ ] Contract Checker
+- [ ] Finish test checks
