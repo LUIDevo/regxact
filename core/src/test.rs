@@ -1,7 +1,7 @@
 #[cfg(test)]
 mod tests {
     use crate::{rx};
-    use crate::pattern::Pattern;
+    use crate::pattern::Rx;
     use crate::regex_tree::RegexTree;
     use crate::error::RegxactError;
     use crate::error::PerformanceError;
@@ -11,7 +11,7 @@ mod tests {
     #[test]
     fn test_single_literal() {
         let tree=RegexTree::Sequence(vec!(RegexTree::Literal('a')));
-        let result=Pattern{pattern: "a".to_string(), tree, allows: HashSet::new(), contract: None};
+        let result=Rx{pattern: "a".to_string(), tree, allows: HashSet::new(), contract: None};
         assert_eq!(rx!("a"), Result::Ok(result));
     }
     
@@ -25,7 +25,7 @@ mod tests {
             RegexTree::Literal('e'),
             RegexTree::Literal('f'),
         ]);
-        let result=Pattern{pattern: "abcdef".to_string(), tree, allows: HashSet::new(), contract: None};
+        let result=Rx{pattern: "abcdef".to_string(), tree, allows: HashSet::new(), contract: None};
         assert_eq!(rx!("abcdef"), Result::Ok(result));
     }
 
@@ -35,7 +35,7 @@ mod tests {
             RegexTree::Literal('a'),
             RegexTree::Literal('b'),
         ]);
-        let result=Pattern{pattern: "a|b".to_string(), tree, allows: HashSet::new(), contract: None};
+        let result=Rx{pattern: "a|b".to_string(), tree, allows: HashSet::new(), contract: None};
         assert_eq!(rx!("a|b"), Result::Ok(result));
     }
 
@@ -67,4 +67,9 @@ mod tests {
     fn test_shorthand() {
         assert_eq!(rx!(r"\s"), Err(RegxactError::CharacterClass(CharacterClassError::DotAll))); //BUG: TEMPORARY, THIS SHOULD ERROR OUT LATER DUE TO UNDECLARED CHARSET
     }
+
+    // #[test]
+    // fn test_email() {
+    //     println!("{:?}", 
+    // }
 }

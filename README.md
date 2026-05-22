@@ -15,8 +15,10 @@ TODO:
 - [x] finish checks
 - [x] convert allow to an enum
 - [x] Get allows working
-- [ ] Redesign the allows approach. Think whether how to approach allows with rx! vs Pattern
-- [ ] Builder pattern
+- [x] Redesign the allows approach. Think whether how to approach allows with rx! vs Pattern
 - [ ] Contract
+- [ ] Builder pattern
 - [ ] Contract Checker
 - [ ] Finish test checks
+- [ ] WASM integration
+- [ ] Better error messaging

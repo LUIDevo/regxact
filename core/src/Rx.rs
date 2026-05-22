@@ -4,14 +4,14 @@ use crate::error::RegxactError;
 use crate::allow::Allow;
 
 #[derive(Debug, PartialEq, Eq)]
-pub struct Pattern {
+pub struct Rx {
     pub pattern: String,
     pub tree: RegexTree,
     pub allows: HashSet<Allow>,
     pub contract: Option<String>,// Todo: turn into a contract type
 }
 
-impl Pattern {
+impl Rx {
     pub fn allow(mut self, allow: &str)-> Result<Self, RegxactError>{
         let allow = match allow{
             "exponentional"=>Allow::Exponential,
