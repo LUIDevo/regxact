@@ -68,8 +68,19 @@ mod tests {
         assert_eq!(rx!(r"\s"), Err(RegxactError::CharacterClass(CharacterClassError::DotAll))); //BUG: TEMPORARY, THIS SHOULD ERROR OUT LATER DUE TO UNDECLARED CHARSET
     }
 
-    // #[test]
-    // fn test_email() {
-    //     println!("{:?}", 
-    // }
+    #[test]
+    fn test_repeat() {
+        let tree=RegexTree::Sequence(vec![
+            RegexTree::Repeat { node: Box::new(RegexTree::Literal('a')), min: 1, max: Some(2) }
+        ]);
+        let result=Rx{pattern: "a{1,2}".to_string(), tree, allows: HashSet::new(), contract: None};
+        assert_eq!(rx!("a{1,2}"), Ok(result));
+    }
+
+    #[test]
+    fn test_email() {
+        let tree=RegexTree::Sequence(vec!(RegexTree::Literal('a')));
+        let result=Rx{pattern: "a".to_string(), tree, allows: HashSet::new(), contract: None};
+        assert_eq!(Rx::email(), Ok(result))
+    }
 }

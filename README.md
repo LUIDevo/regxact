@@ -16,6 +16,7 @@ TODO:
 - [x] convert allow to an enum
 - [x] Get allows working
 - [x] Redesign the allows approach. Think whether how to approach allows with rx! vs Pattern
+- [ ] Fix reference
 - [ ] Contract
 - [ ] Builder pattern
 - [ ] Contract Checker

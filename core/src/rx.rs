@@ -2,6 +2,7 @@ use std::collections::HashSet;
 use crate::regex_tree::RegexTree;
 use crate::error::RegxactError;
 use crate::allow::Allow;
+use crate::rx;
 
 #[derive(Debug, PartialEq, Eq)]
 pub struct Rx {
@@ -22,5 +23,8 @@ impl Rx {
         };
         self.allows.insert(allow);
         Ok(self)
+    }
+    pub fn email() -> Result<Self, RegxactError> {
+        rx!("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$")
     }
 }

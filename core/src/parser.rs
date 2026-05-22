@@ -4,8 +4,6 @@ use crate::regex_tree::AnchorKind;
 use crate::regex_tree::RegexTree;
 use crate::regex_tree::ClassRange;
 
-const METACHARACTERS: [char; 15] = ['.','*','+','?','^','$','{','}','[',']','(',')',']','|','\\'];
-
 //TODO: keep in mind there are other cases
 fn parse_repeat_contents(s: &String)->Option<(usize, Option<usize>)>{
     if s.contains(','){
@@ -24,9 +22,12 @@ fn parse_repeat_contents(s: &String)->Option<(usize, Option<usize>)>{
     }
 }
 
-fn parse_repeat(c: &mut Vec<char>, i: &mut usize, node: RegexTree)->RegexTree{
+fn parse_repeat(c: &mut Vec<char>, i: &mut usize, node: RegexTree, chars:&mut Peekable<Chars>)->RegexTree{
     if let Some(close)=c[*i..].iter().position(|&c| c=='}'){
         let content: String=c[*i..*i+close].iter().collect();
+        for _ in 0..(close-*i){
+            chars.next();
+        }
         *i+=close+1;
         if let Some((min,max))=parse_repeat_contents(&content){
             return RegexTree::Repeat{node: Box::new(node), min, max};
@@ -66,6 +67,7 @@ fn parse_class(chars:&mut Peekable<Chars>)->RegexTree{
 
 pub fn parse(x: &str)->RegexTree {
     let mut chars = x.chars().peekable();
+    let mut list = x.chars().collect::<Vec<char>>();
     let mut alternation=vec![false];
     let mut index: usize=0;
     let mut stack=vec![Vec::new()];
@@ -81,6 +83,7 @@ pub fn parse(x: &str)->RegexTree {
             '\\'=>match chars.next(){
                 Some('B')=>stack.last_mut().unwrap().push(RegexTree::Anchor(AnchorKind::WordBoundary)),
                 Some('b')=>stack.last_mut().unwrap().push(RegexTree::Anchor(AnchorKind::NonWord)),
+                Some('.')=>stack.last_mut().unwrap().push(RegexTree::Literal('.')),
                 Some(c)=>stack.last_mut().unwrap().push(RegexTree::Shorthand(c)),
                 None=>panic!("trailing backslash"),
             }
@@ -96,12 +99,11 @@ pub fn parse(x: &str)->RegexTree {
                 let prev=stack.last_mut().unwrap().pop().unwrap();
                 stack.last_mut().unwrap().push(RegexTree::Repeat{node: Box::new(prev), min: 0, max: Some(1)});
             },
-            '{'=>{
-                let prev=stack.last_mut().unwrap().pop().unwrap();
-                chars.next();
-                index+=1;
-                stack.last_mut().unwrap().push(parse_repeat(&mut x.chars().collect::<Vec<char>>(),&mut index, prev));
-            },
+            '{' => {
+                let prev = stack.last_mut().unwrap().pop().unwrap();
+                index += 1;
+                stack.last_mut().unwrap().push(parse_repeat(&mut list, &mut index, prev, &mut chars));
+            }
             '}'=>(),
             '('=>{
                 stack.push(Vec::new());  
