@@ -1,5 +1,5 @@
 use crate::parser::parse;
-use crate::pattern::Rx;
+use crate::rx::Rx;
 use crate::error::RegxactError;
 use crate::analysis::performance::check_performance;
 use crate::analysis::character_classes::check_character_classes;

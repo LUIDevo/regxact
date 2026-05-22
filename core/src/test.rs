@@ -1,7 +1,7 @@
 #[cfg(test)]
 mod tests {
     use crate::{rx};
-    use crate::pattern::Rx;
+    use crate::rx::Rx;
     use crate::regex_tree::RegexTree;
     use crate::error::RegxactError;
     use crate::error::PerformanceError;

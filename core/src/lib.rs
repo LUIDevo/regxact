@@ -3,7 +3,7 @@ mod test;
 mod parser;
 mod error;
 mod analysis;
-mod pattern;
+mod rx;
 mod regex_tree;
 mod allow;
 
