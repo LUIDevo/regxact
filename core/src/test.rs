@@ -6,6 +6,7 @@ mod tests {
     use crate::error::RegxactError;
     use crate::error::PerformanceError;
     use crate::error::CharacterClassError;
+    use crate::regex_tree::AnchorKind;
     use std::collections::HashSet;
 
     #[test]
@@ -79,10 +80,49 @@ mod tests {
 
     #[test]
     fn test_email() {
-        let tree=RegexTree::Sequence(vec!(RegexTree::Literal('a')));
-        let result=Rx{pattern: "a".to_string(), tree, allows: HashSet::new(), contract: None};
-        assert_eq!(Rx::email(), Ok(result))
+        let tree = RegexTree::Sequence(vec![
+            RegexTree::Anchor(AnchorKind::Start),
+            RegexTree::Repeat {
+                node: Box::new(RegexTree::Class(vec![
+                              ClassRange { start: 'a', end: 'z' },
+                              ClassRange { start: 'A', end: 'Z' },
+                              ClassRange { start: '0', end: '9' },
+                              ClassRange { start: '.', end: '.' },
+                              ClassRange { start: '_', end: '_' },
+                              ClassRange { start: '%', end: '%' },
+                              ClassRange { start: '+', end: '+' },
+                              ClassRange { start: '-', end: '-' },
+                ], false)),
+                min: 1,
+                max: None,
+            },
+            RegexTree::Literal('@'),
+            RegexTree::Repeat {
+                node: Box::new(RegexTree::Class(vec![
+                              ClassRange { start: 'a', end: 'z' },
+                              ClassRange { start: 'A', end: 'Z' },
+                              ClassRange { start: '0', end: '9' },
+                              ClassRange { start: '.', end: '.' },
+                              ClassRange { start: '-', end: '-' },
+                ], false)),
+                min: 1,
+                max: None,
+            },
+            RegexTree::Literal('.'),
+            RegexTree::Repeat {
+                node: Box::new(RegexTree::Class(vec![
+                              ClassRange { start: 'a', end: 'z' },
+                              ClassRange { start: 'A', end: 'Z' },
+                ], false)),
+                min: 2,
+                max: None,
+            },
+            RegexTree::Anchor(AnchorKind::End),
+            ]);
+        let result = Rx { pattern: "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$".to_string(), tree, allows: HashSet::new(), contract: None };
+        assert_eq!(Rx::email(), Ok(result));
     }
+
     #[test]
     fn test_repeat_2() {
         assert_eq!(rx!("\\.[a-zA-Z]{2,}"), Ok(Rx {
