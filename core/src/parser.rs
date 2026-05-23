@@ -52,7 +52,7 @@ fn parse_class(chars:&mut Peekable<Chars>, list: &Vec<char>, index: usize)->(Reg
                 match chars.next() {
                     Some(']') | None => {
                         class.push_range(ClassRange { start: ch, end: ch });
-                        // class.push_range(ClassRange { start: '-', end: '-' });
+                        class.push_range(ClassRange { start: '-', end: '-' });
                         break;
                     }
                     Some(end) => {
@@ -76,7 +76,7 @@ pub fn parse(x: &str)->RegexTree {
     let mut index: usize=0;
     let mut stack=vec![Vec::new()];
     while let Some(ch)=chars.next(){
-        println!("main: {} {}", ch, list[index]); //TODO : REMOVE
+        // println!("main: {} {}", ch, list[index]); //TODO : REMOVE
         match ch {
             '.'=>stack.last_mut().unwrap().push(RegexTree::Wildcard),
             '['=>{

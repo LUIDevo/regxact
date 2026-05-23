@@ -90,8 +90,8 @@ mod tests {
             tree: RegexTree::Sequence(vec![
                 RegexTree::Literal('.'),
                 RegexTree::Repeat { node: Box::new(RegexTree::Class(vec![
-                        ClassRange { start: 'A', end: 'Z' },
                         ClassRange { start: 'a', end: 'z' },
+                        ClassRange { start: 'A', end: 'Z' },
                 ], false)), min: 2, max: None }
             ]),
             allows: HashSet::new(),
