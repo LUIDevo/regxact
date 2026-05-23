@@ -36,21 +36,23 @@ fn parse_repeat(c: &mut Vec<char>, i: &mut usize, node: RegexTree, chars:&mut Pe
     RegexTree::Literal('{')
 }
 
-fn parse_class(chars:&mut Peekable<Chars>)->(RegexTree, usize){
-    let mut chars_consumed: usize=3;
+fn parse_class(chars:&mut Peekable<Chars>, list: &Vec<char>, index: usize)->(RegexTree, usize){
+    let mut chars_consumed: usize=1;
     let negation=*chars.peek().unwrap()=='^'; //BUG: THIS is probably bugged logic due to the previous line, fix later and implement tests for negation
     if negation{ chars.next(); }
     let mut class=RegexTree::Class(Vec::new(),negation);
     while let Some(ch)=chars.next(){
+        println!("class: {} {}", ch, list[index+chars_consumed]); //TODO : REMOVE
         chars_consumed+=1;
         if ch==']'{ break; };
         match chars.peek() {
             Some(&'-') => {
                 chars.next();
+                chars_consumed+=2;
                 match chars.next() {
                     Some(']') | None => {
                         class.push_range(ClassRange { start: ch, end: ch });
-                        class.push_range(ClassRange { start: '-', end: '-' });
+                        // class.push_range(ClassRange { start: '-', end: '-' });
                         break;
                     }
                     Some(end) => {
@@ -74,14 +76,13 @@ pub fn parse(x: &str)->RegexTree {
     let mut index: usize=0;
     let mut stack=vec![Vec::new()];
     while let Some(ch)=chars.next(){
-        println!("{} {}", ch, list[index]); //TODO : REMOVE
+        println!("main: {} {}", ch, list[index]); //TODO : REMOVE
         match ch {
             '.'=>stack.last_mut().unwrap().push(RegexTree::Wildcard),
             '['=>{
-                chars.next(); 
-                let parsed_class=parse_class(&mut chars);
+                let parsed_class=parse_class(&mut chars, &list, index);
                 stack.last_mut().unwrap().push(parsed_class.0);
-                index+=parsed_class.1;
+                index+=parsed_class.1-1;
             },
             '^'=>stack.last_mut().unwrap().push(RegexTree::Anchor(AnchorKind::Start)),
             '$'=>stack.last_mut().unwrap().push(RegexTree::Anchor(AnchorKind::End)),
