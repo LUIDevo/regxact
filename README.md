@@ -21,7 +21,21 @@ TODO:
 - [x] Builder pattern
 - [x] add allows functionality
 - [ ] Add other contracts
-- [ ] Add ALOT more test checks
+    - [x] ipv4
+    - [x] ipv6
+    - [ ] phone number (complicated)
+    - [ ] slug
+    - [ ] uuid
+    - [ ] hex color
+    - [ ] jwt
+    - [ ] semantic verisoning
+    - [ ] date
+    - [ ] time
+    - [ ] postal/zip code (complicated)
+    - [ ] filename/extension
+    - [ ] file path
+- [ ] Add ALOT more test checks, for each contract and allow
+- [ ] Implement test check
 - [ ] WASM integration
 - [ ] Implement test, search, normal regex stuff
 - [ ] Better error messaging
@@ -29,7 +43,7 @@ TODO:
 - [ ] add secondary WASM test checks for all regex types
 - [ ] Publish to crate, npm 
 
-DOes it work with multiple allows?
+Does it work with multiple allows?
 
 Why native engine? Why not rust engine (Answered)
 Rational behind the rules

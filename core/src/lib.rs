@@ -12,7 +12,7 @@ macro_rules! rx{
     ($pattern:expr)=>{
         crate::builder::RegxactBuilder::new($pattern).build()
     };
-    ($pattern:expr, $($key: ident= $val:expr),*)=>{
+    ($pattern:expr, $($key: ident= $val:expr),*)=>{{
         let mut builder=crate::builder::RegxactBuilder::new($pattern);
         $(
             builder=match stringify!($key){
@@ -22,5 +22,5 @@ macro_rules! rx{
             };
         )*
         builder.build()
-    }
+    }}
 }

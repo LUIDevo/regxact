@@ -20,16 +20,16 @@ impl RegxactBuilder {
             contract: None,
         }
     }
-    pub fn allow(mut self, allow: &str)-> Result<Self, RegxactError>{
-        let allow = match allow{
-            "exponentional"=>Allow::Exponential,
-            "multiline"=>Allow::MultiLine,
-            "dotall"=>Allow::DotAll,
-            "wildcard"=>Allow::Wildcard,
-            _=>return Err(RegxactError::UnknownAllow(allow.to_string())),
+    pub fn allow(mut self, allow: &str) -> Self {
+        let allow = match allow {
+            "exponential" => Allow::Exponential,
+            "multiline" => Allow::MultiLine,
+            "dotall" => Allow::DotAll,
+            "wildcard" => Allow::Wildcard,
+            _ => panic!("unknown allow flag: {}", allow),
         };
         self.allows.insert(allow);
-        Ok(self)
+        self
     }
     pub fn contract(mut self, contract: &str)->Self{
         self.contract=Some(contract.to_string());

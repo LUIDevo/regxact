@@ -6,6 +6,7 @@ mod tests {
     use crate::error::RegxactError;
     use crate::error::PerformanceError;
     use crate::error::CharacterClassError;
+    use crate::allow::Allow;
     use crate::regex_tree::AnchorKind;
     use std::collections::HashSet;
 
@@ -44,6 +45,18 @@ mod tests {
     fn test_error_nested_quantifier() {
         let result=RegxactError::Performance(PerformanceError::NestedQuantifier);
         assert_eq!(rx!("(a+)+"), Err(result));
+    }
+    #[test]
+    fn test_error_nested_quantifier_allows() {
+        let mut allows=HashSet::new();
+        allows.insert(Allow::Exponential);
+        let tree=RegexTree::Sequence(
+            vec![
+            RegexTree::Repeat { node: Box::new(RegexTree::Group { node: Box::new(RegexTree::Sequence(vec!(RegexTree::Repeat { node: Box::new(RegexTree::Literal('a')), min: 1, max: None }))), index: 0, capturing: true }) , min: 1, max: None }
+            ]
+        );
+        let result=Rx{pattern:"(a+)+".to_string(), tree, allows, contract: None};
+        assert_eq!(rx!("(a+)+", allow="exponential"), Ok(result));
     }
 
     #[test]
