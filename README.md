@@ -16,11 +16,14 @@ TODO:
 - [x] convert allow to an enum
 - [x] Get allows working
 - [x] Redesign the allows approach. Think whether how to approach allows with rx! vs Pattern
-- [ ] Fix reference
-- [ ] Contract
-- [ ] Builder pattern
+- [x] Fix reference (i dont know what I meant when I wrote this, im just going to asssume I did it)
+- [x] Contract (email contract)
+- [x] Builder pattern
+- [ ] Add other contracts
 - [ ] Contract Checker
 - [ ] Finish test checks
+- [ ] add allows functionality
 - [ ] WASM integration
 - [ ] Better error messaging
 - [ ] Switch to fully index based system
+- [ ] Publish to crate, npm 
