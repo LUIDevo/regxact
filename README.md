@@ -23,15 +23,15 @@ TODO:
 - [ ] Add other contracts
     - [x] ipv4
     - [x] ipv6
+    - [x] slug
+    - [x] uuid
+    - [x] hex color
+    - [x] jwt
+    - [x] semantic verisoning
+    - [x] date
+    - [x] time
     - [ ] phone number (complicated)
-    - [ ] slug
-    - [ ] uuid
-    - [ ] hex color
-    - [ ] jwt
-    - [ ] semantic verisoning
-    - [ ] date
     - [ ] postal/zip code (complicated)
-    - [ ] time
     - [ ] filename/extension
     - [ ] file path
 - [ ] add multi allows functionality
