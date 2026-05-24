@@ -39,7 +39,7 @@ impl RegxactBuilder {
         let tree=parse(&self.pattern);
 
         //checks and validations
-        check_performance(&tree, &self.allows)?; //nested, overlapping quantifier
+        check_performance(&tree, &self.allows)?;
         check_character_classes(&tree, &self.allows)?;
         //contract check, any contradictions if contract exists
         
