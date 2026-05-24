@@ -25,6 +25,8 @@ impl Rx {
         self.allows.insert(allow);
         Ok(self)
     }
+    // pub fn test(){
+    // } //TODO: HERE
     pub fn unanchored(mut self)->Result<Self, RegxactError>{
         self.pattern=strip_anchors_string(&mut self.pattern);
         strip_anchors_tree(&mut self.tree);
