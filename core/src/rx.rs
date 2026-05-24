@@ -27,4 +27,10 @@ impl Rx {
     pub fn email() -> Result<Self, RegxactError> {
         rx!("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$")
     }
+    pub fn ipv4() -> Result<Self, RegxactError> {
+        rx!(r"^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$")
+    }
+    pub fn ipv6() -> Result<Self, RegxactError> {
+        rx!("^(?:[0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}$")
+    }
 }

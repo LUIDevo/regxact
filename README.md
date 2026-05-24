@@ -20,10 +20,14 @@ TODO:
 - [x] Contract (email contract)
 - [x] Builder pattern
 - [ ] Add other contracts
-- [ ] Contract Checker
 - [ ] Finish test checks
 - [ ] add allows functionality
 - [ ] WASM integration
+- [ ] Implement test, search, normal regex stuff
 - [ ] Better error messaging
 - [ ] Switch to fully index based system
 - [ ] Publish to crate, npm 
+
+DOes it work with multiple allows?
+
+Why native engine? Why not rust engine (Answered)
