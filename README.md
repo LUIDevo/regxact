@@ -34,6 +34,7 @@ TODO:
     - [ ] time
     - [ ] filename/extension
     - [ ] file path
+- [ ] add multi allows functionality
 - [ ] Add ALOT more test checks, for each contract and allow
 - [ ] Implement test check
 - [ ] WASM integration
@@ -42,14 +43,15 @@ TODO:
 - [ ] Switch to fully index based system
 - [ ] add secondary WASM test checks for all regex types
 - [ ] Complete README with proper writing
-- [ ] Make sure concept is right, if missing any additional checks
+- [ ] validate that macros are correct and secure
+- [ ] Make sure concept is right, if missing any additional checks (like exponential, but if i need more or less)
 - [ ] Polish everything for v1 release, final checks with other languages (review code for unnesecary snippets)
 - [ ] Publish to crate, npm 
 
 Add ability to work with rust regex engine for security and linear time
 Add contracts
 
-Does it work with multiple allows?
+Better way to handle dates
 
 Why native engine? Why not rust engine (Answered)
 Rational behind the rules

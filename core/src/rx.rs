@@ -41,6 +41,27 @@ impl Rx {
     pub fn ipv6() -> Result<Self, RegxactError> {
         rx!("^(?:[0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}$")
     }
+    pub fn slug() -> Result<Self, RegxactError> {
+        rx!("^[a-z0-9]+(?:-[a-z0-9]+)*$")
+    }
+    pub fn uuid() -> Result<Self, RegxactError> {
+        rx!("^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$")
+    }
+    pub fn jwt() -> Result<Self, RegxactError> {
+        rx!(r"^[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+$")
+    }
+    pub fn hex() -> Result<Self, RegxactError> {
+        rx!("^#(?:[0-9a-fA-F]{6}|[0-9a-fA-F]{3})$")
+    }
+    pub fn versioning() -> Result<Self, RegxactError> {
+        rx!(r"^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$")
+    }
+    pub fn iso_8601_date() -> Result<Self, RegxactError> {
+        rx!("^^[0-9]{4}-(?:0[1-9]|1[0-2])-(?:0[1-9]|[12][0-9]|3[01])$")
+    }
+    pub fn time() -> Result<Self, RegxactError> {
+        rx!("^(?:[01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]$")
+    }
 }
 
 fn strip_anchors_string(pattern: &mut str)->String{
