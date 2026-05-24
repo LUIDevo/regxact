@@ -19,15 +19,17 @@ TODO:
 - [x] Fix reference (i dont know what I meant when I wrote this, im just going to asssume I did it)
 - [x] Contract (email contract)
 - [x] Builder pattern
+- [x] add allows functionality
 - [ ] Add other contracts
-- [ ] Finish test checks
-- [ ] add allows functionality
+- [ ] Add ALOT more test checks
 - [ ] WASM integration
 - [ ] Implement test, search, normal regex stuff
 - [ ] Better error messaging
 - [ ] Switch to fully index based system
+- [ ] add secondary WASM test checks for all regex types
 - [ ] Publish to crate, npm 
 
 DOes it work with multiple allows?
 
 Why native engine? Why not rust engine (Answered)
+Rational behind the rules
