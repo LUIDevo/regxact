@@ -21,14 +21,18 @@ impl RegxactBuilder {
         }
     }
     pub fn allow(mut self, allow: &str) -> Self {
-        let allow = match allow {
-            "exponential" => Allow::Exponential,
-            "multiline" => Allow::MultiLine,
-            "dotall" => Allow::DotAll,
-            "wildcard" => Allow::Wildcard,
-            _ => panic!("unknown allow flag: {}", allow),
-        };
-        self.allows.insert(allow);
+        let list: Vec<&str> = allow.split(',').map(|s| s.trim()).collect();
+        println!("{:?}", list);
+        for item in list{
+            let accepted = match item {
+                "exponential" => Allow::Exponential,
+                "multiline" => Allow::MultiLine,
+                "dotall" => Allow::DotAll,
+                "wildcard" => Allow::Wildcard,
+                _ => panic!("unknown allow flag: {}", item),
+            };
+            self.allows.insert(accepted);
+        }
         self
     }
     pub fn contract(mut self, contract: &str)->Self{

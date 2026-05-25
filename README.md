@@ -34,7 +34,7 @@ TODO:
     - [ ] postal/zip code (complicated)
     - [ ] filename/extension
     - [ ] file path
-- [ ] add multi allows functionality
+- [x] add multi allows functionality
 - [ ] Add ALOT more test checks, for each contract and allow
 - [ ] Implement test check
 - [ ] WASM integration
@@ -52,6 +52,7 @@ Add ability to work with rust regex engine for security and linear time
 Add contracts
 
 Better way to handle dates
+ReDOs
 
 Why native engine? Why not rust engine (Answered)
 Rational behind the rules
