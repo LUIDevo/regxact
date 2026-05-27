@@ -7,10 +7,10 @@ use crate::rx;
 
 #[derive(Debug, PartialEq, Eq)]
 pub struct Rx {
-    pub pattern: String,
-    pub tree: RegexTree,
-    pub allows: HashSet<Allow>,
-    pub contract: Option<String>,// Todo: turn into a contract type
+    pub(crate) pattern: String,
+    pub(crate) tree: RegexTree,
+    pub(crate) allows: HashSet<Allow>,
+    pub(crate) contract: Option<String>,// Todo: turn into a contract type
 }
 
 impl Rx {
