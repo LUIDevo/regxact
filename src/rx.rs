@@ -33,35 +33,35 @@ impl Rx {
         strip_anchors_tree(&mut self.tree);
         Ok(self)
     }
-    pub fn email() -> Rx{
+    pub fn email() -> Rx {
         rx!("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$").unwrap()
     }
-    pub fn ipv4() -> Result<Self, RegxactError> {
-        rx!(r"^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$") 
+    pub fn ipv4() -> Rx {
+        rx!(r"^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$").unwrap()
     }
-    pub fn ipv6() -> Result<Self, RegxactError> {
-        rx!("^(?:[0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}$")
+    pub fn ipv6() -> Rx {
+        rx!("^(?:[0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}$").unwrap()
     }
-    pub fn slug() -> Result<Self, RegxactError> {
-        rx!("^[a-z0-9]+(?:-[a-z0-9]+)*$")
+    pub fn slug() -> Rx {
+        rx!("^[a-z0-9]+(?:-[a-z0-9]+)*$").unwrap()
     }
-    pub fn uuid() -> Result<Self, RegxactError> {
-        rx!("^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$")
+    pub fn uuid() -> Rx {
+        rx!("^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$").unwrap()
     }
-    pub fn jwt() -> Result<Self, RegxactError> {
-        rx!(r"^[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+$")
+    pub fn jwt() -> Rx {
+        rx!(r"^[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+$").unwrap()
     }
-    pub fn hex() -> Result<Self, RegxactError> {
-        rx!("^#(?:[0-9a-fA-F]{6}|[0-9a-fA-F]{3})$")
+    pub fn hex() -> Rx {
+        rx!("^#(?:[0-9a-fA-F]{6}|[0-9a-fA-F]{3})$").unwrap() 
     }
-    pub fn versioning() -> Result<Self, RegxactError> {
-        rx!(r"^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$")
+    pub fn versioning() -> Rx {
+        rx!(r"^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$").unwrap()
     }
-    pub fn iso_8601_date() -> Result<Self, RegxactError> {
-        rx!("^^[0-9]{4}-(?:0[1-9]|1[0-2])-(?:0[1-9]|[12][0-9]|3[01])$")
+    pub fn iso_8601_date() -> Rx {
+        rx!("^^[0-9]{4}-(?:0[1-9]|1[0-2])-(?:0[1-9]|[12][0-9]|3[01])$").unwrap()
     }
-    pub fn time() -> Result<Self, RegxactError> {
-        rx!("^(?:[01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]$")
+    pub fn time() -> Rx {
+        rx!("^(?:[01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]$").unwrap()
     }
     pub fn test(&self, input: &str)->Result<bool, RegxactError>{
         check_anchor(&self.pattern)?;
