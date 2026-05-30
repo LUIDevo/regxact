@@ -1,4 +1,5 @@
 use std::collections::HashSet;
+use regex;
 use crate::regex_tree::RegexTree;
 use crate::regex_tree::AnchorKind;
 use crate::error::RegxactError;
@@ -62,11 +63,17 @@ impl Rx {
     pub fn time() -> Result<Self, RegxactError> {
         rx!("^(?:[01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]$")
     }
+    pub fn test(&self)->Result<bool, RegxactError>{
+        check_anchor(&self.pattern)?;
+        let re = regex::Regex::new(&self.pattern).unwrap();
+        Ok(re.is_match(&self.pattern))
+    }
 }
 
 fn strip_anchors_string(pattern: &mut str)->String{
     pattern.trim_start_matches('^').trim_end_matches('$').to_string()
 }
+
 fn strip_anchors_tree(tree: &mut RegexTree){
     let nodes=tree.nodes_mut();
     if nodes.first() == Some(&RegexTree::Anchor(AnchorKind::Start)) {
@@ -74,5 +81,13 @@ fn strip_anchors_tree(tree: &mut RegexTree){
     }
     if nodes.last() == Some(&RegexTree::Anchor(AnchorKind::End)) {
         nodes.pop();
+    }
+}
+
+fn check_anchor(pattern: &String)->Result<(), RegxactError>{
+    let mut chars = pattern.chars();
+    match chars.nth(0)==Some('^') && chars.last()==Some('$'){
+        true=>Ok(()),
+        false=>Err(RegxactError::Test(crate::error::TestError::UnAnchored)),
     }
 }
