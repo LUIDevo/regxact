@@ -1,3 +1,7 @@
-[workspace]
-members = ["bindings/wasm","core"]
-resolver = "2"
+[package]
+name = "regxact-core"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+regex = "1"

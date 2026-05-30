@@ -6,7 +6,6 @@ mod analysis;
 mod rx;
 mod regex_tree;
 mod allow;
-use wasm_bindgen::prelude::*;
 
 #[macro_export]
 macro_rules! rx{

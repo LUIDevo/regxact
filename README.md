@@ -35,24 +35,22 @@ TODO:
     - [ ] filename/extension
     - [ ] file path
 - [x] add multi allows functionality
-- [ ] Add ALOT more test checks, for each contract and allow
-- [ ] Implement test check
-- [ ] WASM integration
 - [ ] Implement test, search, normal regex stuff
+- [ ] Add ALOT more test checks, for each contract and allow
 - [ ] Better error messaging
 - [ ] Switch to fully index based system
-- [ ] add secondary WASM test checks for all regex types
 - [ ] Complete README with proper writing
 - [ ] validate that macros are correct and secure
 - [ ] Make sure concept is right, if missing any additional checks (like exponential, but if i need more or less)
-- [ ] Polish everything for v1 release, final checks with other languages (review code for unnesecary snippets)
+- [ ] Polish everything for v1 release
 - [ ] Publish to crate, npm 
 
-Add ability to work with rust regex engine for security and linear time
-Add contracts
+explain advantages of rust regex engine for security and linear time
 
 Better way to handle dates
 ReDOs
 
-Why native engine? Why not rust engine (Answered)
 Rational behind the rules
+Try another language
+
+Add contracts
