@@ -63,10 +63,10 @@ impl Rx {
     pub fn time() -> Result<Self, RegxactError> {
         rx!("^(?:[01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]$")
     }
-    pub fn test(&self)->Result<bool, RegxactError>{
+    pub fn test(&self, input: &str)->Result<bool, RegxactError>{
         check_anchor(&self.pattern)?;
         let re = regex::Regex::new(&self.pattern).unwrap();
-        Ok(re.is_match(&self.pattern))
+        Ok(re.is_match(input))
     }
 }
 

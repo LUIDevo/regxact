@@ -151,4 +151,17 @@ mod tests {
             contract: None
         }));
     }
+
+    #[test]
+    fn test_test() -> Result<(), RegxactError> {
+        let r = rx!("^a$")?;
+        assert_eq!(r.test("a")?, true);
+        Ok(())
+    }
+
+    #[test]
+    fn test_test_err(){
+        let r = rx!("a").unwrap();
+        assert!(r.test("a").is_err());
+    }
 }
