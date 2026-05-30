@@ -133,7 +133,7 @@ mod tests {
             RegexTree::Anchor(AnchorKind::End),
             ]);
         let result = Rx { pattern: "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$".to_string(), tree, allows: HashSet::new(), contract: None };
-        assert_eq!(Rx::email(), Ok(result));
+        assert_eq!(Rx::email(), result);
     }
 
     #[test]
@@ -163,5 +163,12 @@ mod tests {
     fn test_test_err(){
         let r = rx!("a").unwrap();
         assert!(r.test("a").is_err());
+    }
+
+    #[test]
+    fn test_test_email() -> Result<(), RegxactError> {
+        let r = Rx::email();
+        assert_eq!(r.test("hi@gmail.com")?, true);
+        Ok(())
     }
 }

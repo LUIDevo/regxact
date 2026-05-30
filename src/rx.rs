@@ -33,8 +33,8 @@ impl Rx {
         strip_anchors_tree(&mut self.tree);
         Ok(self)
     }
-    pub fn email() -> Result<Self, RegxactError> {
-        rx!("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$")
+    pub fn email() -> Rx{
+        rx!("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$").unwrap()
     }
     pub fn ipv4() -> Result<Self, RegxactError> {
         rx!(r"^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$") 
