@@ -171,4 +171,11 @@ mod tests {
         assert_eq!(r.test("hi@gmail.com")?, true);
         Ok(())
     }
+
+    #[test]
+    fn test_test_versioning() -> Result<(), RegxactError> {
+        let r = Rx::versioning();
+        assert_eq!(r.test("1.1.1")?, true);
+        Ok(())
+    }
 }
