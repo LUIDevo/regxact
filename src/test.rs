@@ -206,4 +206,11 @@ mod tests {
         assert_eq!(r.test("my-blog-post")?, true);
         Ok(())
     }
+
+    #[test]
+    fn test_test_slug_err () -> Result<(), RegxactError> {
+        let r = Rx::slug();
+        assert_eq!(r.test("ssdiajdsidsalt")?, false);
+        Ok(())
+    }
 }
