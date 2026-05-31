@@ -201,6 +201,13 @@ mod tests {
     }
 
     #[test]
+    fn test_test_ipv6_err () -> Result<(), RegxactError> {
+        let r = Rx::ipv6();
+        assert_eq!(r.test("abcdef")?, false);
+        Ok(())
+    }
+
+    #[test]
     fn test_test_slug () -> Result<(), RegxactError> {
         let r = Rx::slug();
         assert_eq!(r.test("my-blog-post")?, true);
