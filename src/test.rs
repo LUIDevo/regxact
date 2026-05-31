@@ -192,4 +192,18 @@ mod tests {
         assert_eq!(r.test("185.107.80.231")?, true);
         Ok(())
     }
+
+    #[test]
+    fn test_test_ipv6 () -> Result<(), RegxactError> {
+        let r = Rx::ipv6();
+        assert_eq!(r.test("2001:0db8:85a3:0000:0000:8a2e:0370:7334")?, true);
+        Ok(())
+    }
+
+    #[test]
+    fn test_test_slug () -> Result<(), RegxactError> {
+        let r = Rx::slug();
+        assert_eq!(r.test("my-blog-post")?, true);
+        Ok(())
+    }
 }
