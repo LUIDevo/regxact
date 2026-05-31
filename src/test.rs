@@ -178,4 +178,18 @@ mod tests {
         assert_eq!(r.test("1.1.1")?, true);
         Ok(())
     }
+
+    #[test]
+    fn test_test_versioning_err() -> Result<(), RegxactError> {
+        let r = Rx::versioning();
+        assert_eq!(r.test("1.1.a")?, false);
+        Ok(())
+    }
+
+    #[test]
+    fn test_test_ipv4 () -> Result<(), RegxactError> {
+        let r = Rx::ipv4();
+        assert_eq!(r.test("185.107.80.231")?, true);
+        Ok(())
+    }
 }
