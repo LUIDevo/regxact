@@ -113,7 +113,6 @@ pub fn parse(x: &str)->RegexTree {
             c=>{
                 stack.last_mut().unwrap().push(RegexTree::Literal(c));
             },
-            _=>(),
         }
         index+=1;
     }
