@@ -25,7 +25,7 @@ fn parse_repeat(chars: &mut Vec<char>, i: &mut usize, node: RegexTree)->RegexTre
     if let Some(close)=chars[*i..].iter().position(|&c| c=='}'){
         let content: String=chars[*i..*i+close].iter().collect();
         println!("{:?}", content);
-        *i+=close+1;
+        *i+=close;
         if let Some((min,max))=parse_repeat_contents(&content){
             return RegexTree::Repeat{node: Box::new(node), min, max};
         }
@@ -34,33 +34,21 @@ fn parse_repeat(chars: &mut Vec<char>, i: &mut usize, node: RegexTree)->RegexTre
 }
 
 fn parse_class(chars: &Vec<char>, i: &mut usize)->RegexTree{
-    let negation=chars[*i]=='^'; //BUG: THIS is probably bugged logic due to the previous line, fix later and implement tests for negation
+    *i+=1;
+    let negation = chars.get(*i) == Some(&'^');
     if negation{ *i+=1; }
     let mut class=RegexTree::Class(Vec::new(),negation);
-    while *i < chars.len() {
-        let ch=chars[*i];
-        println!("class: {}", chars[*i]); //TODO : REMOVE
-        if ch==']'{ break; };
-        match ch {
-            '-' => {
-                match chars.get(*i+1) {
-                    Some(']') | None => {
-                        class.push_range(ClassRange { start: ch, end: ch });
-                        class.push_range(ClassRange { start: '-', end: '-' });
-                        break;
-                    }
-                    Some(&end) => {
-                        //TODO: validate ch <= end
-                        class.push_range(ClassRange { start: ch, end });
-                    }
-                }
-                *i+=1;
-            }
-            _ => {
-                class.push_range(ClassRange { start: ch, end: ch });
-            }
+    while *i < chars.len() && chars[*i] != ']' {
+        let start=chars[*i];
+        if chars.get(*i+1)==Some(&'-') && chars.get(*i+2).map_or(false, |&c| c != ']') {
+            let end=chars[*i+2];
+            //TODO: validate start <= end
+            class.push_range(ClassRange { start, end });
+            *i+=3;
+        } else {
+            class.push_range(ClassRange { start, end: start });
+            *i+=1;
         }
-        *i+=1;
     }
     class
 }
