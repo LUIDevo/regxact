@@ -22,7 +22,7 @@ pub fn check_node(node: &RegexTree, inside_repeat: bool, allows: &HashSet<Allow>
         RegexTree::Alternation(inner_nodes)=>{
             let mut duplication=HashSet::new();
             for inner_node in inner_nodes{
-                if !duplication.insert(inner_node) && !allows.contains(&Allow::DotAll){ //BUG: Add new allow
+                if !duplication.insert(inner_node) && !allows.contains(&Allow::Exponential){
                     return Err(RegxactError::Performance(PerformanceError::DuplicateAlternation));
                 }
                 check_node(inner_node, inside_repeat, allows)?;
