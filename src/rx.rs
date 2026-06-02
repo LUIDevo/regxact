@@ -82,6 +82,21 @@ impl Rx {
         let re = regex::Regex::new(&self.pattern).unwrap();
         Ok(re.replace(input, rep))
     }
+    pub fn replace_all<'a>(&self, input: &'a str, rep: &str)->Result<Cow<'a, str>, RegxactError>{
+        // check_anchor_find(&self.pattern)?;
+        let re = regex::Regex::new(&self.pattern).unwrap();
+        Ok(re.replace_all(input, rep))
+    }
+    pub fn split<'a>(&self, input: &'a str)->Result<Vec<&'a str>, RegxactError>{
+        // check_anchor_find(&self.pattern)?;
+        let re = regex::Regex::new(&self.pattern).unwrap();
+        Ok(re.split(input).collect())
+    }
+    pub fn extract<'a>(&self, input: &'a str)->Result<Option<Vec<&'a str>>, RegxactError>{
+        // check_anchor_find(&self.pattern)?;
+        let re = regex::Regex::new(&self.pattern).unwrap();
+        Ok(re.captures(input).map(|caps| caps.iter().flatten().map(|m| m.as_str()).collect()))
+    }
 }
 
 fn strip_anchors_string(pattern: &mut str)->String{ 
