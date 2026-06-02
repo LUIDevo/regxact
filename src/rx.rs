@@ -12,7 +12,6 @@ pub struct Rx {
     pub(crate) pattern: String,
     pub(crate) tree: RegexTree,
     pub(crate) allows: HashSet<Allow>,
-    pub(crate) contract: Option<String>,// Todo: turn into a contract type
 }
 
 impl Rx {

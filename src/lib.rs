@@ -17,7 +17,6 @@ macro_rules! rx{
         $(
             builder=match stringify!($key){
                 "allow"=>builder.allow($val),
-                "use"=>builder.contract($val),
                 _=>builder,
             };
         )*

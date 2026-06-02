@@ -5,7 +5,6 @@ mod tests {
     use crate::regex_tree::{ClassRange, RegexTree};
     use crate::error::RegxactError;
     use crate::error::PerformanceError;
-    use crate::error::CharacterClassError;
     use crate::allow::Allow;
     use crate::regex_tree::AnchorKind;
     use std::collections::HashSet;
@@ -13,7 +12,7 @@ mod tests {
     #[test]
     fn test_single_literal() {
         let tree=RegexTree::Sequence(vec!(RegexTree::Literal('a')));
-        let result=Rx{pattern: "a".to_string(), tree, allows: HashSet::new(), contract: None};
+        let result=Rx{pattern: "a".to_string(), tree, allows: HashSet::new()};
         assert_eq!(rx!("a"), Result::Ok(result));
     }
     
@@ -27,7 +26,7 @@ mod tests {
             RegexTree::Literal('e'),
             RegexTree::Literal('f'),
         ]);
-        let result=Rx{pattern: "abcdef".to_string(), tree, allows: HashSet::new(), contract: None};
+        let result=Rx{pattern: "abcdef".to_string(), tree, allows: HashSet::new()};
         assert_eq!(rx!("abcdef"), Result::Ok(result));
     }
 
@@ -37,7 +36,7 @@ mod tests {
             RegexTree::Literal('a'),
             RegexTree::Literal('b'),
         ]);
-        let result=Rx{pattern: "a|b".to_string(), tree, allows: HashSet::new(), contract: None};
+        let result=Rx{pattern: "a|b".to_string(), tree, allows: HashSet::new() };
         assert_eq!(rx!("a|b"), Result::Ok(result));
     }
 
@@ -66,7 +65,7 @@ mod tests {
             RegexTree::Repeat { node: Box::new(RegexTree::Group { node: Box::new(RegexTree::Sequence(vec!(RegexTree::Repeat { node: Box::new(RegexTree::Literal('a')), min: 1, max: None }))), index: 0, capturing: true }) , min: 1, max: None }
             ]
         );
-        let result=Rx{pattern:"(a+)+".to_string(), tree, allows, contract: None};
+        let result=Rx{pattern:"(a+)+".to_string(), tree, allows };
         assert_eq!(rx!("(a+)+", allow="exponential"), Ok(result));
     }
 
@@ -98,7 +97,7 @@ mod tests {
         let tree=RegexTree::Sequence(vec![
             RegexTree::Repeat { node: Box::new(RegexTree::Literal('a')), min: 1, max: Some(2) }
         ]);
-        let result=Rx{pattern: "a{1,2}".to_string(), tree, allows: HashSet::new(), contract: None};
+        let result=Rx{pattern: "a{1,2}".to_string(), tree, allows: HashSet::new()};
         assert_eq!(rx!("a{1,2}"), Ok(result));
     }
 
@@ -143,7 +142,7 @@ mod tests {
             },
             RegexTree::Anchor(AnchorKind::LineEnd),
             ]);
-        let result = Rx { pattern: "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$".to_string(), tree, allows: HashSet::new(), contract: None };
+        let result = Rx { pattern: "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$".to_string(), tree, allows: HashSet::new(), };
         assert_eq!(Rx::email(), result);
     }
 
@@ -159,7 +158,6 @@ mod tests {
                 ], false)), min: 2, max: None }
             ]),
             allows: HashSet::new(),
-            contract: None
         }));
     }
 

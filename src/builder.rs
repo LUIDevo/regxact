@@ -8,7 +8,6 @@ use std::collections::HashSet;
 pub struct RegxactBuilder {
     pattern: String,
     allows: HashSet<Allow>,
-    contract: Option<String>,
 }
 
 impl RegxactBuilder {
@@ -16,7 +15,6 @@ impl RegxactBuilder {
         RegxactBuilder{
             pattern:pattern.to_string(),
             allows: HashSet::new(),
-            contract: None,
         }
     }
     pub fn allow(mut self, allow: &str) -> Self {
@@ -33,10 +31,6 @@ impl RegxactBuilder {
         }
         self
     }
-    pub fn contract(mut self, contract: &str)->Self{
-        self.contract=Some(contract.to_string());
-        self
-    }
     pub fn build(self)->Result<Rx, RegxactError>{
         let tree=parse(&self.pattern);
 
@@ -44,6 +38,6 @@ impl RegxactBuilder {
         check_performance(&tree, &self.allows)?;
         //contract check, any contradictions if contract exists
         
-        Ok(Rx{pattern: self.pattern, tree, allows: self.allows, contract: self.contract})
+        Ok(Rx{pattern: self.pattern, tree, allows: self.allows})
     }
 }
