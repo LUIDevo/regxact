@@ -1,5 +1,3 @@
-use std::iter::Peekable;
-use std::str::Chars;
 use crate::regex_tree::AnchorKind;
 use crate::regex_tree::RegexTree;
 use crate::regex_tree::ClassRange;
@@ -22,9 +20,9 @@ fn parse_repeat_contents(s: &String)->Option<(usize, Option<usize>)>{
     }
 }
 
-fn parse_repeat(c: &mut Vec<char>, i: &mut usize, node: RegexTree)->RegexTree{
+fn parse_repeat(chars: &mut Vec<char>, i: &mut usize, node: RegexTree)->RegexTree{
     println!("{}", i);
-    if let Some(close)=c[*i..].iter().position(|&c| c=='}'){
+    if let Some(close)=chars[*i..].iter().position(|&c| c=='}'){
         let content: String=c[*i..*i+close].iter().collect();
         println!("{:?}", content);
         for _ in 0..=close { chars.next(); }
@@ -36,14 +34,13 @@ fn parse_repeat(c: &mut Vec<char>, i: &mut usize, node: RegexTree)->RegexTree{
     RegexTree::Literal('{')
 }
 
-fn parse_class(chars: &Vec<char>, index: &mut usize)->RegexTree{
-    let mut chars_consumed: usize=1;
-    let negation=*chars.peek().unwrap()=='^'; //BUG: THIS is probably bugged logic due to the previous line, fix later and implement tests for negation
-    if negation{ index+=1; }
+fn parse_class(chars: &Vec<char>, i: &mut usize)->RegexTree{
+    let negation=chars[*i]=='^'; //BUG: THIS is probably bugged logic due to the previous line, fix later and implement tests for negation
+    if negation{ *i+=1; }
     let mut class=RegexTree::Class(Vec::new(),negation);
-    while let Some(ch)=chars.next(){
-        println!("class: {} {}", ch, list[index+chars_consumed]); //TODO : REMOVE
-        chars_consumed+=1;
+    while *i < chars.len() {
+        let ch=chars[*i];
+        println!("class: {}", chars[i]); //TODO : REMOVE
         if ch==']'{ break; };
         match chars.peek() {
             Some(&'-') => {
