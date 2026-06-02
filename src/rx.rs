@@ -67,14 +67,14 @@ impl Rx {
         let re = regex::Regex::new(&self.pattern).unwrap();
         Ok(re.is_match(input))
     }
-    // pub fn find_first(&self, input: &str)->Result<&str, RegxactError>{
-    //     let re = regex::Regex::new(&self.pattern).unwrap();
-    //     Ok(re.find(input))
-    // }
+    pub fn find_first<'a>(&self, input: &'a str)->Result<Option<regex::Match<'a>>, RegxactError>{
+        // check_anchor_find(&self.pattern)?;
+        let re = regex::Regex::new(&self.pattern).unwrap();
+        Ok(re.find(input))
+    }
 }
 
-fn strip_anchors_string(pattern: &mut str)->String{
-    pattern.trim_start_matches('^').trim_end_matches('$').to_string()
+fn strip_anchors_string(pattern: &mut str)->String{ pattern.trim_start_matches('^').trim_end_matches('$').to_string()
 }
 
 fn strip_anchors_tree(tree: &mut RegexTree){
