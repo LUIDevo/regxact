@@ -36,8 +36,8 @@ TODO:
     - [ ] file path
 - [x] add multi allows functionality
 - [x] Switch to fully index based system
-- [ ] Implement test, search, normal regex stuff
-- [ ] Add ALOT more test checks, for each contract and allow
+- [x] Implement test, search, normal regex stuff
+- [ ] Add ALOT more test checks, for each allow
 - [ ] Better error messaging
 - [ ] Complete README with proper writing
 - [ ] validate that macros are correct and secure

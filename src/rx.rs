@@ -18,8 +18,6 @@ impl Rx {
     pub fn allow(mut self, allow: &str)-> Result<Self, RegxactError>{
         let allow = match allow{
             "exponentional"=>Allow::Exponential,
-            "dotall"=>Allow::DotAll,
-            "wildcard"=>Allow::Wildcard,
             _=>return Err(RegxactError::UnknownAllow(allow.to_string())),
         };
         self.allows.insert(allow);

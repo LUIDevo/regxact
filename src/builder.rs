@@ -23,8 +23,6 @@ impl RegxactBuilder {
         for item in list{
             let accepted = match item {
                 "exponential" => Allow::Exponential,
-                "dotall" => Allow::DotAll,
-                "wildcard" => Allow::Wildcard,
                 _ => panic!("unknown allow flag: {}", item),
             };
             self.allows.insert(accepted);
