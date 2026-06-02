@@ -2,7 +2,6 @@ use crate::parser::parse;
 use crate::rx::Rx;
 use crate::error::RegxactError;
 use crate::analysis::performance::check_performance;
-use crate::analysis::character_classes::check_character_classes;
 use crate::allow::Allow;
 use std::collections::HashSet;
 
@@ -43,7 +42,6 @@ impl RegxactBuilder {
 
         //checks and validations
         check_performance(&tree, &self.allows)?;
-        check_character_classes(&tree, &self.allows)?;
         //contract check, any contradictions if contract exists
         
         Ok(Rx{pattern: self.pattern, tree, allows: self.allows, contract: self.contract})

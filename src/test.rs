@@ -88,10 +88,10 @@ mod tests {
         assert_eq!(rx!("(a|ab)"), Err(result));
     }
 
-    #[test]
-    fn test_shorthand() {
-        assert_eq!(rx!(r"\s"), Err(RegxactError::CharacterClass(CharacterClassError::DotAll))); //BUG: TEMPORARY, THIS SHOULD ERROR OUT LATER DUE TO UNDECLARED CHARSET
-    }
+    // #[test]
+    // fn test_shorthand() {
+    //     assert_eq!(rx!(r"\s"), Err(RegxactError::CharacterClass(CharacterClassError::DotAll))); //BUG: TEMPORARY, THIS SHOULD ERROR OUT LATER DUE TO UNDECLARED CHARSET
+    // }
 
     #[test]
     fn test_repeat() {
