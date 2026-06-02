@@ -53,6 +53,25 @@ fn parse_class(chars: &Vec<char>, i: &mut usize)->RegexTree{
     class
 }
 
+fn group_prefix_end(chars: &Vec<char>, open: usize) -> usize {
+    if chars.get(open + 1) != Some(&'?') {
+        return open;
+    }
+    let find = |from: usize, close: char, default: usize| {
+        chars[from..].iter().position(|&c| c == close).map_or(default, |p| from + p)
+    };
+    match chars.get(open + 2) {
+        Some(':') | Some('=') | Some('!') => open + 2,
+        Some('<') => match chars.get(open + 3) {
+            Some('=') | Some('!') => open + 3,
+            _ => find(open + 3, '>', open + 2),
+        },
+        Some('P') => find(open + 3, '>', open + 2),
+        Some('\'') => find(open + 3, '\'', open + 2),
+        _ => open + 1,
+    }
+}
+
 pub fn parse(x: &str)->RegexTree {
     let mut chars = x.chars().collect::<Vec<char>>();
     let mut alternation=vec![false];
@@ -67,12 +86,15 @@ pub fn parse(x: &str)->RegexTree {
                 let parsed_class=parse_class(&mut chars, &mut index);
                 stack.last_mut().unwrap().push(parsed_class);
             },
-            '^'=>stack.last_mut().unwrap().push(RegexTree::Anchor(AnchorKind::Start)),
-            '$'=>stack.last_mut().unwrap().push(RegexTree::Anchor(AnchorKind::End)),
+            '^'=>stack.last_mut().unwrap().push(RegexTree::Anchor(AnchorKind::LineStart)),
+            '$'=>stack.last_mut().unwrap().push(RegexTree::Anchor(AnchorKind::LineEnd)),
             '\\'=>{
                 match chars.get(index+1){
-                    Some('B')=>stack.last_mut().unwrap().push(RegexTree::Anchor(AnchorKind::WordBoundary)),
-                    Some('b')=>stack.last_mut().unwrap().push(RegexTree::Anchor(AnchorKind::NonWord)),
+                    Some('b')=>stack.last_mut().unwrap().push(RegexTree::Anchor(AnchorKind::WordBoundary)),
+                    Some('B')=>stack.last_mut().unwrap().push(RegexTree::Anchor(AnchorKind::NonWord)),
+                    Some('A')=>stack.last_mut().unwrap().push(RegexTree::Anchor(AnchorKind::StringStart)),
+                    Some('Z')=>stack.last_mut().unwrap().push(RegexTree::Anchor(AnchorKind::StringEnd)),
+                    Some('z')=>stack.last_mut().unwrap().push(RegexTree::Anchor(AnchorKind::StringEndAbsolute)),
                     Some('.')=>stack.last_mut().unwrap().push(RegexTree::Literal('.')),
                     Some(c)=>stack.last_mut().unwrap().push(RegexTree::Shorthand(*c)),
                     None=>panic!("trailing backslash"),
@@ -98,8 +120,9 @@ pub fn parse(x: &str)->RegexTree {
             }
             '}'=>(),
             '('=>{
-                stack.push(Vec::new());  
+                stack.push(Vec::new());
                 alternation.push(false);
+                index = group_prefix_end(&chars, index); 
             },
             ')'=>{
                 let prev=stack.pop().unwrap();

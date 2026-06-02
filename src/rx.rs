@@ -68,6 +68,10 @@ impl Rx {
         let re = regex::Regex::new(&self.pattern).unwrap();
         Ok(re.is_match(input))
     }
+    // pub fn find_first(&self, input: &str)->Result<&str, RegxactError>{
+    //     let re = regex::Regex::new(&self.pattern).unwrap();
+    //     Ok(re.find(input))
+    // }
 }
 
 fn strip_anchors_string(pattern: &mut str)->String{

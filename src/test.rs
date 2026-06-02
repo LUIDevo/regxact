@@ -46,6 +46,17 @@ mod tests {
         let result=RegxactError::Performance(PerformanceError::NestedQuantifier);
         assert_eq!(rx!("(a+)+"), Err(result));
     }
+
+   fn test_error_unbounded_1() {
+        let result=RegxactError::Performance(PerformanceError::NestedQuantifier);
+        assert_eq!(rx!("(.*)*"), Err(result));
+    }
+
+   fn test_error_unbounded_2() {
+        let result=RegxactError::Performance(PerformanceError::NestedQuantifier);
+        assert_eq!(rx!(".*.*"), Err(result));
+    }
+
     #[test]
     fn test_error_nested_quantifier_allows() {
         let mut allows=HashSet::new();

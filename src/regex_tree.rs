@@ -54,8 +54,11 @@ impl RegexTree{
 
 #[derive(Clone, PartialEq, Eq, Hash, Debug)]
 pub enum AnchorKind {
-    Start, // ^
-    End,   // $
+    LineStart, // ^
+    LineEnd,   // $
+    StringStart, // \A
+    StringEnd,   // \Z
+    StringEndAbsolute,   // \z
     WordBoundary, // \B
     NonWord, // \b
 }
