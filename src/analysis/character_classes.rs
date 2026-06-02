@@ -16,12 +16,6 @@ pub fn check_node(node: &RegexTree, allows: &HashSet<Allow>)->Result<(), Regxact
             Ok(())
         },
         RegexTree::Shorthand(c)=>{
-            if *c=='m'{
-                if !allows.contains(&Allow::MultiLine){ 
-                    return Err(RegxactError::CharacterClass(CharacterClassError::MultiLine));
-                }
-                return Ok(());
-            }
             if *c=='s'{
                 if !allows.contains(&Allow::DotAll){
                     return Err(RegxactError::CharacterClass(CharacterClassError::DotAll));

@@ -105,7 +105,7 @@ mod tests {
     #[test]
     fn test_email() {
         let tree = RegexTree::Sequence(vec![
-            RegexTree::Anchor(AnchorKind::Start),
+            RegexTree::Anchor(AnchorKind::LineStart),
             RegexTree::Repeat {
                 node: Box::new(RegexTree::Class(vec![
                               ClassRange { start: 'a', end: 'z' },
@@ -141,7 +141,7 @@ mod tests {
                 min: 2,
                 max: None,
             },
-            RegexTree::Anchor(AnchorKind::End),
+            RegexTree::Anchor(AnchorKind::LineEnd),
             ]);
         let result = Rx { pattern: "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$".to_string(), tree, allows: HashSet::new(), contract: None };
         assert_eq!(Rx::email(), result);

@@ -17,7 +17,6 @@ pub enum PerformanceError{
 #[derive(Debug, PartialEq)]
 pub enum CharacterClassError{
     UnescapedDot,
-    MultiLine,
     DotAll,
 }
 
@@ -50,7 +49,6 @@ impl fmt::Display for CharacterClassError {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {
             CharacterClassError::UnescapedDot => write!(f, "declare wildcard to avoid error"),
-            CharacterClassError::MultiLine => write!(f, "declare multiline"),
             CharacterClassError::DotAll => write!(f, "Declare dotall in allow"),
         }
     }

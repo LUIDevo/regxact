@@ -18,7 +18,6 @@ impl Rx {
     pub fn allow(mut self, allow: &str)-> Result<Self, RegxactError>{
         let allow = match allow{
             "exponentional"=>Allow::Exponential,
-            "multiline"=>Allow::MultiLine,
             "dotall"=>Allow::DotAll,
             "wildcard"=>Allow::Wildcard,
             _=>return Err(RegxactError::UnknownAllow(allow.to_string())),
@@ -80,12 +79,16 @@ fn strip_anchors_string(pattern: &mut str)->String{
 
 fn strip_anchors_tree(tree: &mut RegexTree){
     let nodes=tree.nodes_mut();
-    if nodes.first() == Some(&RegexTree::Anchor(AnchorKind::Start)) {
-        nodes.remove(0);
-    }
-    if nodes.last() == Some(&RegexTree::Anchor(AnchorKind::End)) {
-        nodes.pop();
-    }
+    let strip_start = matches!(
+        nodes.first(),
+        Some(RegexTree::Anchor(AnchorKind::LineStart | AnchorKind::StringStart))
+    );
+    let strip_end = matches!(
+        nodes.last(),
+        Some(RegexTree::Anchor(AnchorKind::LineEnd | AnchorKind::StringEnd | AnchorKind::StringEndAbsolute))
+    );
+    if strip_end { nodes.pop(); }
+    if strip_start { nodes.remove(0); }
 }
 
 fn check_anchor(pattern: &String)->Result<(), RegxactError>{

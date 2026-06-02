@@ -26,7 +26,6 @@ impl RegxactBuilder {
         for item in list{
             let accepted = match item {
                 "exponential" => Allow::Exponential,
-                "multiline" => Allow::MultiLine,
                 "dotall" => Allow::DotAll,
                 "wildcard" => Allow::Wildcard,
                 _ => panic!("unknown allow flag: {}", item),
