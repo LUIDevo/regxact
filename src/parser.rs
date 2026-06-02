@@ -36,7 +36,7 @@ fn parse_repeat(c: &mut Vec<char>, i: &mut usize, node: RegexTree)->RegexTree{
     RegexTree::Literal('{')
 }
 
-fn parse_class(chars: &Vec<char>, index: usize)->(RegexTree, usize){
+fn parse_class(chars: &Vec<char>, index: &mut usize)->RegexTree{
     let mut chars_consumed: usize=1;
     let negation=*chars.peek().unwrap()=='^'; //BUG: THIS is probably bugged logic due to the previous line, fix later and implement tests for negation
     if negation{ index+=1; }
@@ -66,7 +66,7 @@ fn parse_class(chars: &Vec<char>, index: usize)->(RegexTree, usize){
             }
         }
     }
-    (class,chars_consumed)
+    class
 }
 
 pub fn parse(x: &str)->RegexTree {
@@ -80,9 +80,8 @@ pub fn parse(x: &str)->RegexTree {
         match ch {
             '.'=>stack.last_mut().unwrap().push(RegexTree::Wildcard),
             '['=>{
-                let parsed_class=parse_class(&mut chars, index);
-                stack.last_mut().unwrap().push(parsed_class.0);
-                index+=parsed_class.1-1;
+                let parsed_class=parse_class(&mut chars, &mut index);
+                stack.last_mut().unwrap().push(parsed_class);
             },
             '^'=>stack.last_mut().unwrap().push(RegexTree::Anchor(AnchorKind::Start)),
             '$'=>stack.last_mut().unwrap().push(RegexTree::Anchor(AnchorKind::End)),
