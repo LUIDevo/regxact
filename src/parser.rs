@@ -23,9 +23,8 @@ fn parse_repeat_contents(s: &String)->Option<(usize, Option<usize>)>{
 fn parse_repeat(chars: &mut Vec<char>, i: &mut usize, node: RegexTree)->RegexTree{
     println!("{}", i);
     if let Some(close)=chars[*i..].iter().position(|&c| c=='}'){
-        let content: String=c[*i..*i+close].iter().collect();
+        let content: String=chars[*i..*i+close].iter().collect();
         println!("{:?}", content);
-        for _ in 0..=close { chars.next(); }
         *i+=close+1;
         if let Some((min,max))=parse_repeat_contents(&content){
             return RegexTree::Repeat{node: Box::new(node), min, max};
@@ -40,28 +39,28 @@ fn parse_class(chars: &Vec<char>, i: &mut usize)->RegexTree{
     let mut class=RegexTree::Class(Vec::new(),negation);
     while *i < chars.len() {
         let ch=chars[*i];
-        println!("class: {}", chars[i]); //TODO : REMOVE
+        println!("class: {}", chars[*i]); //TODO : REMOVE
         if ch==']'{ break; };
-        match chars.peek() {
-            Some(&'-') => {
-                chars.next();
-                chars_consumed+=2;
-                match chars.next() {
+        match ch {
+            '-' => {
+                match chars.get(*i+1) {
                     Some(']') | None => {
                         class.push_range(ClassRange { start: ch, end: ch });
                         class.push_range(ClassRange { start: '-', end: '-' });
                         break;
                     }
-                    Some(end) => {
+                    Some(&end) => {
                         //TODO: validate ch <= end
                         class.push_range(ClassRange { start: ch, end });
                     }
                 }
+                *i+=1;
             }
             _ => {
                 class.push_range(ClassRange { start: ch, end: ch });
             }
         }
+        *i+=1;
     }
     class
 }
