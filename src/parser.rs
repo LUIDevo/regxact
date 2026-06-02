@@ -22,7 +22,7 @@ fn parse_repeat_contents(s: &String)->Option<(usize, Option<usize>)>{
     }
 }
 
-fn parse_repeat(c: &mut Vec<char>, i: &mut usize, node: RegexTree, chars:&mut Peekable<Chars>)->RegexTree{
+fn parse_repeat(c: &mut Vec<char>, i: &mut usize, node: RegexTree)->RegexTree{
     println!("{}", i);
     if let Some(close)=c[*i..].iter().position(|&c| c=='}'){
         let content: String=c[*i..*i+close].iter().collect();
@@ -36,10 +36,10 @@ fn parse_repeat(c: &mut Vec<char>, i: &mut usize, node: RegexTree, chars:&mut Pe
     RegexTree::Literal('{')
 }
 
-fn parse_class(chars:&mut Peekable<Chars>, list: &Vec<char>, index: usize)->(RegexTree, usize){
+fn parse_class(chars: &Vec<char>, index: usize)->(RegexTree, usize){
     let mut chars_consumed: usize=1;
     let negation=*chars.peek().unwrap()=='^'; //BUG: THIS is probably bugged logic due to the previous line, fix later and implement tests for negation
-    if negation{ chars.next(); }
+    if negation{ index+=1; }
     let mut class=RegexTree::Class(Vec::new(),negation);
     while let Some(ch)=chars.next(){
         println!("class: {} {}", ch, list[index+chars_consumed]); //TODO : REMOVE
@@ -70,29 +70,29 @@ fn parse_class(chars:&mut Peekable<Chars>, list: &Vec<char>, index: usize)->(Reg
 }
 
 pub fn parse(x: &str)->RegexTree {
-    let mut chars = x.chars().peekable();
-    let mut list = x.chars().collect::<Vec<char>>();
+    let mut chars = x.chars().collect::<Vec<char>>();
     let mut alternation=vec![false];
     let mut index: usize=0;
     let mut stack=vec![Vec::new()];
-    while let Some(ch)=chars.next(){
+    while index < chars.len(){
+        let ch=chars[index];
         // println!("main: {} {}", ch, list[index]); //TODO : REMOVE
         match ch {
             '.'=>stack.last_mut().unwrap().push(RegexTree::Wildcard),
             '['=>{
-                let parsed_class=parse_class(&mut chars, &list, index);
+                let parsed_class=parse_class(&mut chars, index);
                 stack.last_mut().unwrap().push(parsed_class.0);
                 index+=parsed_class.1-1;
             },
             '^'=>stack.last_mut().unwrap().push(RegexTree::Anchor(AnchorKind::Start)),
             '$'=>stack.last_mut().unwrap().push(RegexTree::Anchor(AnchorKind::End)),
             '\\'=>{
-                match chars.next(){
-                Some('B')=>stack.last_mut().unwrap().push(RegexTree::Anchor(AnchorKind::WordBoundary)),
-                Some('b')=>stack.last_mut().unwrap().push(RegexTree::Anchor(AnchorKind::NonWord)),
-                Some('.')=>stack.last_mut().unwrap().push(RegexTree::Literal('.')),
-                Some(c)=>stack.last_mut().unwrap().push(RegexTree::Shorthand(c)),
-                None=>panic!("trailing backslash"),
+                match chars.get(index+1){
+                    Some('B')=>stack.last_mut().unwrap().push(RegexTree::Anchor(AnchorKind::WordBoundary)),
+                    Some('b')=>stack.last_mut().unwrap().push(RegexTree::Anchor(AnchorKind::NonWord)),
+                    Some('.')=>stack.last_mut().unwrap().push(RegexTree::Literal('.')),
+                    Some(c)=>stack.last_mut().unwrap().push(RegexTree::Shorthand(*c)),
+                    None=>panic!("trailing backslash"),
                 };
                 index += 1;
             }
@@ -111,7 +111,7 @@ pub fn parse(x: &str)->RegexTree {
             '{' => {
                 let prev = stack.last_mut().unwrap().pop().unwrap();
                 index += 1;
-                stack.last_mut().unwrap().push(parse_repeat(&mut list, &mut index, prev, &mut chars));
+                stack.last_mut().unwrap().push(parse_repeat(&mut chars, &mut index, prev));
             }
             '}'=>(),
             '('=>{
@@ -126,10 +126,11 @@ pub fn parse(x: &str)->RegexTree {
             },
             '|' => {
                 *alternation.last_mut().unwrap()=true;
-            }
+            },
             c=>{
                 stack.last_mut().unwrap().push(RegexTree::Literal(c));
-            }
+            },
+            _=>(),
         }
         index+=1;
     }

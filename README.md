@@ -35,10 +35,10 @@ TODO:
     - [ ] filename/extension
     - [ ] file path
 - [x] add multi allows functionality
+- [ ] Switch to fully index based system
 - [ ] Implement test, search, normal regex stuff
 - [ ] Add ALOT more test checks, for each contract and allow
 - [ ] Better error messaging
-- [ ] Switch to fully index based system
 - [ ] Complete README with proper writing
 - [ ] validate that macros are correct and secure
 - [ ] Make sure concept is right, if missing any additional checks (like exponential, but if i need more or less)
