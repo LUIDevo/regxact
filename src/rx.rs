@@ -1,3 +1,4 @@
+use std::borrow::Cow;
 use std::collections::HashSet;
 use regex;
 use crate::regex_tree::RegexTree;
@@ -72,9 +73,20 @@ impl Rx {
         let re = regex::Regex::new(&self.pattern).unwrap();
         Ok(re.find(input))
     }
+    pub fn find_all<'a>(&self, input: &'a str)->Result<Vec<regex::Match<'a>>, RegxactError>{
+        // check_anchor_find(&self.pattern)?;
+        let re = regex::Regex::new(&self.pattern).unwrap();
+        Ok(re.find_iter(input).collect())
+    }
+    pub fn replace_first<'a>(&self, input: &'a str, rep: &str)->Result<Cow<'a, str>, RegxactError>{
+        // check_anchor_find(&self.pattern)?;
+        let re = regex::Regex::new(&self.pattern).unwrap();
+        Ok(re.replace(input, rep))
+    }
 }
 
-fn strip_anchors_string(pattern: &mut str)->String{ pattern.trim_start_matches('^').trim_end_matches('$').to_string()
+fn strip_anchors_string(pattern: &mut str)->String{ 
+    pattern.trim_start_matches('^').trim_end_matches('$').to_string()
 }
 
 fn strip_anchors_tree(tree: &mut RegexTree){
