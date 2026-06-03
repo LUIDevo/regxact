@@ -21,10 +21,8 @@ fn parse_repeat_contents(s: &String)->Option<(usize, Option<usize>)>{
 }
 
 fn parse_repeat(chars: &mut Vec<char>, i: &mut usize, node: RegexTree)->RegexTree{
-    println!("{}", i);
     if let Some(close)=chars[*i..].iter().position(|&c| c=='}'){
         let content: String=chars[*i..*i+close].iter().collect();
-        println!("{:?}", content);
         *i+=close;
         if let Some((min,max))=parse_repeat_contents(&content){
             return RegexTree::Repeat{node: Box::new(node), min, max};
@@ -72,11 +70,21 @@ fn group_prefix_end(chars: &Vec<char>, open: usize) -> usize {
     }
 }
 
+// Collapse a single branch into one node: a lone element stays bare, multiple
+// elements become a Sequence.
+fn combine_branch(mut nodes: Vec<RegexTree>) -> RegexTree {
+    if nodes.len() == 1 {
+        nodes.pop().unwrap()
+    } else {
+        RegexTree::Sequence(nodes)
+    }
+}
+
 pub fn parse(x: &str)->RegexTree {
     let mut chars = x.chars().collect::<Vec<char>>();
-    let mut alternation=vec![false];
+    let mut branches: Vec<Vec<RegexTree>> = vec![Vec::new()];
     let mut index: usize=0;
-    let mut stack=vec![Vec::new()];
+    let mut stack: Vec<Vec<RegexTree>> = vec![Vec::new()];
     while index < chars.len(){
         let ch=chars[index];
         // println!("main: {} {}", ch, list[index]); //TODO : REMOVE
@@ -121,17 +129,23 @@ pub fn parse(x: &str)->RegexTree {
             '}'=>(),
             '('=>{
                 stack.push(Vec::new());
-                alternation.push(false);
-                index = group_prefix_end(&chars, index); 
+                branches.push(Vec::new());
+                index = group_prefix_end(&chars, index);
             },
             ')'=>{
-                let prev=stack.pop().unwrap();
-                let is_alt=alternation.pop().unwrap();
-                let node = if is_alt {Box::new(RegexTree::Alternation(prev))} else {Box::new(RegexTree::Sequence(prev))};
-                stack.last_mut().unwrap().push(RegexTree::Group{node: node, index: 0, capturing: true});//BUG: FIX INDEX
+                let current=stack.pop().unwrap();
+                let mut group_branches=branches.pop().unwrap();
+                let node = if group_branches.is_empty() {
+                    RegexTree::Sequence(current)
+                } else {
+                    group_branches.push(combine_branch(current));
+                    RegexTree::Alternation(group_branches)
+                };
+                stack.last_mut().unwrap().push(RegexTree::Group{node: Box::new(node), index: 0, capturing: true});//BUG: FIX INDEX
             },
             '|' => {
-                *alternation.last_mut().unwrap()=true;
+                let current=std::mem::take(stack.last_mut().unwrap());
+                branches.last_mut().unwrap().push(combine_branch(current));
             },
             c=>{
                 stack.last_mut().unwrap().push(RegexTree::Literal(c));
@@ -139,8 +153,12 @@ pub fn parse(x: &str)->RegexTree {
         }
         index+=1;
     }
-    if *alternation.last_mut().unwrap()==true{
-        return RegexTree::Alternation(stack.remove(0));
+    let current=stack.pop().unwrap();
+    let mut top_branches=branches.pop().unwrap();
+    if top_branches.is_empty() {
+        RegexTree::Sequence(current)
+    } else {
+        top_branches.push(combine_branch(current));
+        RegexTree::Alternation(top_branches)
     }
-    RegexTree::Sequence(stack.remove(0))
 }

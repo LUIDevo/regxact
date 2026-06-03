@@ -37,6 +37,8 @@ TODO:
 - [x] add multi allows functionality
 - [x] Switch to fully index based system
 - [x] Implement test, search, normal regex stuff
+- [ ] Finish parsing errors
+- [ ] Implement all tests into all modes
 - [ ] Add ALOT more test checks, for each allow
 - [ ] Better error messaging
 - [ ] Complete README with proper writing

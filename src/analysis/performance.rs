@@ -8,30 +8,66 @@ use crate::allow::Allow;
 // (a|b|a)    — same
 // (a|ab)    — same
 
-pub fn check_node(node: &RegexTree, inside_repeat: bool, allows: &HashSet<Allow>)->Result<(), RegxactError>{
+// Strip Group / single-element Sequence wrappers so we can see whether a
+// quantifier directly wraps another quantifier (the catastrophic case).
+fn unwrap_singleton(node: &RegexTree) -> &RegexTree {
     match node {
-        RegexTree::Repeat{ node: inner_node, min, max} => {
-            if inside_repeat && !allows.contains(&Allow::Exponential){
-                return Err(RegxactError::Performance(PerformanceError::NestedQuantifier));
+        RegexTree::Group { node, .. } => unwrap_singleton(node),
+        RegexTree::Sequence(nodes) if nodes.len() == 1 => unwrap_singleton(&nodes[0]),
+        _ => node,
+    }
+}
+
+// Flatten a branch into its sequence of elements so we can compare branches
+// for equality / prefix overlap (e.g. `a` is a prefix of `ab`).
+fn branch_elems(node: &RegexTree) -> Vec<&RegexTree> {
+    match node {
+        RegexTree::Sequence(nodes) => nodes.iter().collect(),
+        other => vec![other],
+    }
+}
+
+fn overlapping(a: &RegexTree, b: &RegexTree) -> bool {
+    let ea = branch_elems(a);
+    let eb = branch_elems(b);
+    let n = ea.len().min(eb.len());
+    ea[..n] == eb[..n]
+}
+
+pub fn check_node(node: &RegexTree, allows: &HashSet<Allow>)->Result<(), RegxactError>{
+    match node {
+        RegexTree::Repeat{ node: inner_node, min: _, max} => {
+            // Only an unbounded quantifier directly wrapping another unbounded
+            // quantifier causes exponential backtracking. A bounded outer (e.g.
+            // `{7}`) or a separating token inside the group is safe.
+            if max.is_none() && !allows.contains(&Allow::Exponential){
+                if let RegexTree::Repeat{ max: None, .. } = unwrap_singleton(inner_node) {
+                    return Err(RegxactError::Performance(PerformanceError::NestedQuantifier));
+                }
             }
-            check_node(inner_node, true, allows)
+            check_node(inner_node, allows)
         }
         RegexTree::Group{ node: inner_node, ..}=>{
-            check_node(inner_node, inside_repeat, allows)
+            check_node(inner_node, allows)
         }
         RegexTree::Alternation(inner_nodes)=>{
-            let mut duplication=HashSet::new();
-            for inner_node in inner_nodes{
-                if !duplication.insert(inner_node) && !allows.contains(&Allow::Exponential){
-                    return Err(RegxactError::Performance(PerformanceError::DuplicateAlternation));
+            if !allows.contains(&Allow::Exponential){
+                for i in 0..inner_nodes.len(){
+                    for j in (i+1)..inner_nodes.len(){
+                        if overlapping(&inner_nodes[i], &inner_nodes[j]){
+                            return Err(RegxactError::Performance(PerformanceError::DuplicateAlternation));
+                        }
+                    }
                 }
-                check_node(inner_node, inside_repeat, allows)?;
+            }
+            for inner_node in inner_nodes{
+                check_node(inner_node, allows)?;
             }
             Ok(())
         }
         RegexTree::Sequence(inner_nodes)=>{
             for inner_node in inner_nodes{
-                check_node(inner_node, inside_repeat, allows)?;
+                check_node(inner_node, allows)?;
             }
             Ok(())
         }
@@ -40,8 +76,5 @@ pub fn check_node(node: &RegexTree, inside_repeat: bool, allows: &HashSet<Allow>
 }
 
 pub fn check_performance(tree: &RegexTree, allows: &HashSet<Allow>)->Result<(), RegxactError>{
-    for node in tree.nodes(){
-        check_node(node, false, allows)?;
-    }
-    Ok(())
-} //TODO: add it so allows does something
+    check_node(tree, allows)
+}

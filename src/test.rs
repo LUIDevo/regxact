@@ -169,8 +169,14 @@ mod tests {
     }
 
     #[test]
-    fn test_test_err(){
+    fn test_test_err_missing_anchor(){
         let r = rx!("a").unwrap();
+        assert!(r.test("a").is_err());
+    }
+
+    #[test]
+    fn test_test_partial_anchor(){ //rewrite test
+        let r = rx!("^a").unwrap();
         assert!(r.test("a").is_err());
     }
 
@@ -228,5 +234,21 @@ mod tests {
         let r = Rx::slug();
         assert_eq!(r.test("ssdiajdsidsalt")?, false);
         Ok(())
+    }
+
+    #[test]
+    fn test_a() {
+        assert_eq!(rx!("(a|a)*"), Err(RegxactError::Performance(PerformanceError::NestedQuantifier)));
+    }
+
+    #[test]
+    fn test_b()-> Result<(), RegxactError> {
+        assert_eq!(rx!(r"(a|a)*.*"), Ok(Rx { pattern: "".to_string(), tree: RegexTree::Sequence(vec![RegexTree::Literal('a')]), allows: HashSet::new() }));
+        Ok(())
+    }
+
+    #[test]
+    fn test_backreferences(){
+        // assert!(rx!(r"^\1$").unwrap());
     }
 }
