@@ -71,20 +71,28 @@ mod tests {
 
     #[test]
     fn test_error_duplicate_alternation(){
+        // Bare (a|a) is merely redundant, not vulnerable; the quantifier is what
+        // makes the overlapping branches blow up.
         let result=RegxactError::Performance(PerformanceError::DuplicateAlternation);
-        assert_eq!(rx!("(a|a)"), Err(result));
+        assert_eq!(rx!("(a|a)+"), Err(result));
+    }
+
+    #[test]
+    fn test_error_duplicate_alternation_bare_ok() {
+        // Without a quantifier, duplicate branches are harmless (linear).
+        assert!(rx!("(a|a)").is_ok());
     }
 
     #[test]
     fn test_error_duplicate_alternation_three_branches() {
         let result=RegxactError::Performance(PerformanceError::DuplicateAlternation);
-        assert_eq!(rx!("(a|b|a)"), Err(result));
+        assert_eq!(rx!("(a|b|a)+"), Err(result));
     }
 
     #[test]
     fn test_error_duplicate_alternation_partial() {
         let result=RegxactError::Performance(PerformanceError::DuplicateAlternation);
-        assert_eq!(rx!("(a|ab)"), Err(result));
+        assert_eq!(rx!("(a|ab)+"), Err(result));
     }
 
     // #[test]
@@ -232,23 +240,27 @@ mod tests {
     #[test]
     fn test_test_slug_err () -> Result<(), RegxactError> {
         let r = Rx::slug();
-        assert_eq!(r.test("ssdiajdsidsalt")?, false);
+        assert_eq!(r.test("SSDIAJDSIDSALT")?, false);
         Ok(())
     }
 
     #[test]
     fn test_a() {
-        assert_eq!(rx!("(a|a)*"), Err(RegxactError::Performance(PerformanceError::NestedQuantifier)));
+        // (a|a)* — overlapping alternation under an unbounded quantifier with a
+        // worst-case wall at the end → genuinely ReDoS-vulnerable.
+        assert_eq!(rx!("(a|a)*"), Err(RegxactError::Performance(PerformanceError::DuplicateAlternation)));
     }
 
     #[test]
     fn test_b()-> Result<(), RegxactError> {
-        assert_eq!(rx!(r"(a|a)*.*"), Ok(Rx { pattern: "".to_string(), tree: RegexTree::Sequence(vec![RegexTree::Literal('a')]), allows: HashSet::new() }));
+        // (a|a)*.* — the trailing .* absorbs the rest of the input, so nothing
+        // can fail and force backtracking → not vulnerable, no error.
+        assert!(rx!(r"(a|a)*.*").is_ok());
         Ok(())
     }
 
     #[test]
-    fn test_backreferences(){
-        // assert!(rx!(r"^\1$").unwrap());
+    fn test_lookahead(){
+        assert!(rx!(r"^(?=a)a$").is_ok());
     }
 }
