@@ -57,3 +57,5 @@ Rational behind the rules
 Try another language
 
 Add contracts
+
+Development has stopped, due to conflictions with the base "regex" crate which prevents ReDos, which diminishes the usage of the app.
