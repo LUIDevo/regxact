@@ -53,10 +53,12 @@ explain advantages of rust regex engine for security and linear time
 Better way to handle dates
 ReDOs
 
-Rational behind the rules
+Rationale behind the rules
 Try another language
 
 Add contracts
 
 Development has stopped, due to conflictions with the base "regex" crate which prevents ReDos, which diminishes the usage of the app.
 I might make some more changes though heehe
+
+Pivot to python or javascript/node depending on what gap I have in my resume
