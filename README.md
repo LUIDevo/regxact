@@ -62,3 +62,4 @@ Development has stopped, due to conflictions with the base "regex" crate which p
 I might make some more changes though heehe
 
 Pivot to python or javascript/node depending on what gap I have in my resume
+I think I will do node because most applications use it
