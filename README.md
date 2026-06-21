@@ -63,6 +63,7 @@ I might make some more changes though heehe
 
 Pivot to python or javascript/node depending on what gap I have in my resume
 I think I will do node because most applications use it
-- [ ] Try to figure out general syntax
+- [ ] What do I do for js/ts impl?
+- [ ] Try to figure out general syntax for node
 - [ ] Figure out main structs
 - [ ] Implement parsing 
