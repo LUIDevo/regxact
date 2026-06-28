@@ -54,3 +54,4 @@ ReDOs
 Rationale behind the rules
 
 Development has stopped, due to conflictions with the base "regex" crate which prevents ReDos, which diminishes the usage of the app.
+AS OF 2026-06-27 THIS PROJECT IS DONE!
