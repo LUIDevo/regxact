@@ -44,9 +44,7 @@ TODO:
 - [ ] Complete README with proper writing
 - [ ] validate that macros are correct and secure
 - [ ] Make sure every error has a flag
-- [ ] Make sure concept is right, if missing any additional checks (like exponential, but if i need more or less)
 - [ ] Polish everything for v1 release
-- [ ] Publish to crate, npm 
 
 explain advantages of rust regex engine for security and linear time
 
@@ -54,16 +52,5 @@ Better way to handle dates
 ReDOs
 
 Rationale behind the rules
-Try another language
-
-Add contracts
 
 Development has stopped, due to conflictions with the base "regex" crate which prevents ReDos, which diminishes the usage of the app.
-I might make some more changes though heehe
-
-Pivot to python or javascript/node depending on what gap I have in my resume
-I think I will do node because most applications use it
-- [ ] What do I do for js/ts impl?
-- [ ] Try to figure out general syntax for node
-- [ ] Figure out main structs
-- [ ] Implement parsing 
