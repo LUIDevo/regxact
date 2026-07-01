@@ -10,13 +10,11 @@ Regex is one of software's biggest footguns. Malformed regex patterns have taken
 
 ## Why I stopped
 
-The core premise didn't make sense for Rust.
+The core premise didn't make sense for Rust. The ReDoS checker was one of the main points of the project. It detected nested quantifiers and duplicate alternations, but Rust's `regex` crate runs in linear time. It is immune to ReDoS, making one of the largest aspects of the projects was redundant.
 
-The ReDoS checker was one of the main points of the project. It detected nested quantifiers and duplicate alternations, but Rust's `regex` crate runs in **guaranteed linear time**. It is immune to ReDoS. So one of the largest aspects of the projects was redundant.
+On top of that, the "safer regex through validation" niche already exists in other languages, like [recheck](https://makenowjust-labs.github.io/recheck/) for JavaScript, where ReDoS is a real concern because JS engines are capable of backtracking.
 
-On top of that, the "safer regex through validation" niche already exists - e.g. [recheck](https://makenowjust-labs.github.io/recheck/) for JavaScript, where ReDoS *is* a real concern because JS engines backtrack.
-
-The analyzer being pointless against the linear-time engine it wrapped, and other languages already having tooling — left no meaningful direction to take the project.
+This meant there was no meaningful direction to take the project.
 
 ## What I built
 
