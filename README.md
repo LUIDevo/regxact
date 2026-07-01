@@ -1,57 +1,28 @@
 # Regxact
-Regxact is a multi-language regex safety layer, with macros for common use cases that developers can easily build off of.
 
-## What it solves:
-This simple regex pattern took down CrowdStrike, cost over x billion dollars to fix, and was completely invisible until it was too late.
-Regex is one of software's most common footguns. A malformed pattern can bypass authentication, crash a server, or allow an attacker into your system with nothing in your toolchain to warn you. If billion dollar companies with dedicated security teams don't catch these in testing, there's no reason to assume you will either. 
+> **Archived** I stopped development 2026-06-27. 
 
-The traditional developer approach to regex is to avoid writing it entirely, by googling, asking AI, or copying from StackOverflow. But it doesn't adress the core problem: Regex is hard to read, hard to write, and extremely easy to mess up.
+Regxact started as a regex safety layer for Rust: macros for common patterns (email, UUID, IPv4/IPv6, JWT, etc.), a builder API, test safety checkers, and a static analyzer meant to catch catastrophic-backtracking (ReDoS) patterns before they ever ran.
 
-Regxact fixes this by providing developers with macros that cover common use cases of regex, so you don't have to write or even see raw regex in your codebase. For everything else, Regxact allows you to write Regex with an additional safety checker, that can also be used to extend off of the macros. 
+## Why I built it
 
-Experienced developers can adopt Regxact quickly. It gets out of your way and makes regex safer without slowing you down.
+Regex is one of software's biggest footguns. Malformed regex patterns have taken down large systems, and most developers avoid writing regex by copying from Google/StackOverflow/AI without fully understanding what they pasted. The idea was to hand developers safe, pre-built pattern macros so they'd rarely touch raw regex, and to statically flag dangerous patterns for the cases where they did.
 
-TODO:
-- [x] finish checks
-- [x] convert allow to an enum
-- [x] Get allows working
-- [x] Redesign the allows approach. Think whether how to approach allows with rx! vs Pattern
-- [x] Fix reference (i dont know what I meant when I wrote this, im just going to asssume I did it)
-- [x] Contract (email contract)
-- [x] Builder pattern
-- [x] add allows functionality
-- [ ] Add other contracts
-    - [x] ipv4
-    - [x] ipv6
-    - [x] slug
-    - [x] uuid
-    - [x] hex color
-    - [x] jwt
-    - [x] semantic verisoning
-    - [x] date
-    - [x] time
-    - [ ] phone number (complicated)
-    - [ ] postal/zip code (complicated)
-    - [ ] filename/extension
-    - [ ] file path
-- [x] add multi allows functionality
-- [x] Switch to fully index based system
-- [x] Implement test, search, normal regex stuff
-- [ ] Finish parsing errors
-- [ ] Implement all tests into all modes
-- [ ] Add ALOT more test checks, for each allow
-- [ ] Better error messaging
-- [ ] Complete README with proper writing
-- [ ] validate that macros are correct and secure
-- [ ] Make sure every error has a flag
-- [ ] Polish everything for v1 release
+## Why I stopped
 
-explain advantages of rust regex engine for security and linear time
+The core premise didn't make sense for Rust.
 
-Better way to handle dates
-ReDOs
+The ReDoS checker was one of the main points of the project. It detected nested quantifiers and duplicate alternations, but Rust's `regex` crate runs in **guaranteed linear time**. It is immune to ReDoS. So one of the largest aspects of the projects was redundant.
 
-Rationale behind the rules
+On top of that, the "safer regex through validation" niche already exists - e.g. [recheck](https://makenowjust-labs.github.io/recheck/) for JavaScript, where ReDoS *is* a real concern because JS engines backtrack.
 
-Development has stopped, due to conflictions with the base "regex" crate which prevents ReDos, which diminishes the usage of the app.
-AS OF 2026-06-27 THIS PROJECT IS DONE!
+The analyzer being pointless against the linear-time engine it wrapped, and other languages already having tooling — left no meaningful direction to take the project.
+
+## What I built
+
+- **`rx!` macro** — build a checked pattern, with optional `allow` overrides for flagged constructs.
+- **Regex parser + tree** (`src/parser.rs`, `src/regex_tree.rs`) — My favorite part of the project, taking apart a regex string and breaking it down into language.
+- **Builder API** (`src/builder.rs`) — construction, anchoring control (`unanchored()`) for testing.
+- **Pattern macros** (`src/rx.rs`) — `Rx::email()`, `ipv4`, `ipv6`, `uuid`, `slug`, `hex_color`, `jwt`, `semver`, `date`, `time`.
+- **Static analysis** (`src/analysis/`) — the (now redundant) backtracking heuristics.
+- **Test Suite** (`src/test.rs/`) — Unit tests covering parser output, ReDoS detection, macro correctness and anchoring rules.
